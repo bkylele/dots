@@ -94,7 +94,7 @@
     config = {
       user = {
         name = "Brian Le";
-        email = "brian.k.le@proton.me";
+        email = "contact@brianle.4wrd.cc";
       };
 
       pull.rebase = true;
