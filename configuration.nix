@@ -2,16 +2,24 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
   nix = {
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     optimise.automatic = true;
     gc = {
       automatic = true;
@@ -35,7 +43,7 @@
   # this fixes physical buttons not working
   boot.initrd.availableKernelModules = [ "pinctrl_tigerlake" ];
 
-  # Suspend when pressing the power 
+  # Suspend when pressing the power
   services.logind.settings.Login.HandlePowerKey = "suspend";
 
   # Surface GPE/Lid driver to enable wakeup from suspend via the lid.
@@ -50,10 +58,10 @@
   time.timeZone = "America/Los_Angeles";
 
   environment.sessionVariables = {
-    XDG_CACHE_HOME      = "$HOME/.cache";
-    XDG_CONFIG_HOME     = "$HOME/.config";
-    XDG_DATA_HOME       = "$HOME/.local/share";
-    XDG_STATE_HOME      = "$HOME/.local/state";
+    XDG_CACHE_HOME = "$HOME/.cache";
+    XDG_CONFIG_HOME = "$HOME/.config";
+    XDG_DATA_HOME = "$HOME/.local/share";
+    XDG_STATE_HOME = "$HOME/.local/state";
   };
 
   fonts.packages = with pkgs; [
@@ -80,36 +88,61 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
-
   programs.nh.enable = true;
+  programs.git = {
+    enable = true;
+    config = {
+      user = {
+        name = "Brian Le";
+        email = "brian.k.le@proton.me";
+      };
+
+      pull.rebase = true;
+
+      init.defaultBranch = "main";
+
+      url = {
+        "https://github.com/" = {
+          insteadOf = [ "gh:" ];
+        };
+        "https://codeberg.org/" = {
+          insteadOf = [ "cb:" ];
+        };
+      };
+    };
+  };
+
   programs.direnv.enable = true;
   programs.firefox.enable = true;
   programs.niri.enable = true;
-  programs.steam.enable = true;
   services.gvfs.enable = true; # required for certain nautilus functions
 
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        # login handled by niri
+        # login handled by niri/session locker
         command = "${config.programs.niri.package}/bin/niri-session";
         user = "brian";
       };
     };
   };
 
+  nixpkgs.config.allowUnfree = true;
+  programs.steam.enable = true;
+
   # User Profiles
   users.users.brian = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+    ];
   };
 
   # System Profile
   environment.systemPackages = with pkgs; [
     neovim
-    git
     htop
     zoxide
     fzf
@@ -131,7 +164,6 @@
     imv
 
     kitty
-    # inputs.kitty.packages.${pkgs.stdenv.hostPlatform.system}.default
     fuzzel
     vesktop
     catppuccin-cursors.mochaDark
@@ -182,4 +214,3 @@
   system.stateVersion = "25.11"; # Did you read the comment?
 
 }
-
