@@ -6,14 +6,16 @@ I like to experiment a lot with workflows, many things are subject to change.
 
 Using NixOS, you can just do:
 ```bash
-nixos-rebuild switch --flake github:bkylele/.dotfiles#buggy 
+nixos-rebuild switch --flake git+https://codeberg.org/bkle/dots#buggy 
+# or using nh:
+nh os switch git+https://codeberg.org/bkle/dots
 ```
 
 I'm working on making all of my software configurations available through this
 repository's flake, so my configuration per app is available through:
 
 ```bash
-nix run codeberg.org/bkle/dots#neovim # or any other app
+nix run git+https://codeberg.org/bkle/dots#neovim # or any other app
 ```
 
 ## TODO
