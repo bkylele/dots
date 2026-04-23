@@ -23,7 +23,6 @@
           no-neck-pain-nvim
           luasnip
           vim-snippets
-          kitty-scrollback-nvim
           lean-nvim
         ];
 

@@ -20,7 +20,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   group = "custom_close_q",
   pattern = { "help", "qf", "fugitive", "fugitiveblame" },
   callback = function()
-      vim.keymap.set("n", "q", "<cmd>bd!<CR>", { noremap = true, buffer = true })
+      vim.keymap.set("n", "q", "<cmd>bd!<CR>", { buffer = true })
   end,
 })
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
@@ -28,7 +28,7 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
   callback = function()
     local name = vim.api.nvim_buf_get_name(0)
     if name:match("^fugitive://") or name:match("^/tmp/") then
-      vim.keymap.set("n", "q", "<cmd>bd!<CR>", { noremap = true, buffer = true })
+      vim.keymap.set("n", "q", "<cmd>bd!<CR>", { buffer = true })
     end
   end,
 })

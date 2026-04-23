@@ -36,8 +36,6 @@ vim.cmd('let loaded_matchparen = 1')
 -- see (:h ui2)
 require('vim._core.ui2').enable({})
 
-require('kitty-scrollback').setup()
-
 require("no-neck-pain").setup({
     buffers = {
         left = {
