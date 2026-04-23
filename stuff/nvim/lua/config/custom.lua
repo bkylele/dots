@@ -14,3 +14,21 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.bo.formatprg = ", nixfmt"
   end,
 })
+
+vim.api.nvim_create_augroup("custom_close_q", { clear = true })
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  group = "custom_close_q",
+  pattern = { "help", "qf", "fugitive", "fugitiveblame" },
+  callback = function()
+      vim.keymap.set("n", "q", "<cmd>bd!<CR>", { noremap = true, buffer = true })
+  end,
+})
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+  group = "custom_close_q",
+  callback = function()
+    local name = vim.api.nvim_buf_get_name(0)
+    if name:match("^fugitive://") or name:match("^/tmp/") then
+      vim.keymap.set("n", "q", "<cmd>bd!<CR>", { noremap = true, buffer = true })
+    end
+  end,
+})

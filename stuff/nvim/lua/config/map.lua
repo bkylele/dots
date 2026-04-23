@@ -35,7 +35,7 @@ vim.keymap.set('n', '<leader>pv', '<cmd>Oil<cr>',                          { des
 vim.keymap.set('n', '<leader>u',  '<cmd>UndotreeShow | UndotreeFocus<cr>', { desc = 'Open and focus Undotree' })
 vim.keymap.set('n', '<leader>gs', '<cmd>Git<cr>',                          { desc = 'Open Git status' })
 vim.keymap.set('n', '<leader>gl', '<cmd>Git log<cr>',                      { desc = 'Open Git log' })
-vim.keymap.set('n', '<leader>g<space>', ':Git <space>',                    { desc = 'Run :Git command' })
+vim.keymap.set('n', '<leader>g<space>', ':Git<space>',                     { desc = 'Run :Git command' })
 vim.keymap.set('n', '<c-w><c-g>', '<cmd>NoNeckPain<cr>',                   { desc = 'Toggle NoNeckPain' })
 
 local ls = require('luasnip')

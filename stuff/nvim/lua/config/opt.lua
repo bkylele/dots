@@ -40,14 +40,16 @@ require('kitty-scrollback').setup()
 
 require("no-neck-pain").setup({
     buffers = {
-        scratchPad = {
-            enabled = true,
-            fileName = "notes",
-            location = "~/dox/",
-        },
-        bo = {
-            filetype = "md"
-        },
+        left = {
+            scratchPad = {
+                enabled = true,
+                fileName = "notes",
+                location = "~/dox/",
+            },
+            bo = {
+                filetype = "md"
+            },
+        }
     },
 })
 
