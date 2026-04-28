@@ -18,7 +18,7 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_augroup("custom_close_q", { clear = true })
 vim.api.nvim_create_autocmd({ "FileType" }, {
   group = "custom_close_q",
-  pattern = { "help", "qf", "fugitive", "fugitiveblame" },
+  pattern = { "help", "qf", "oil", "fugitive", "fugitiveblame" },
   callback = function()
       vim.keymap.set("n", "q", "<cmd>bd!<CR>", { buffer = true })
   end,
@@ -32,3 +32,21 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
     end
   end,
 })
+
+
+-- vim.api.nvim_create_user_command('Git', function(opts)
+--   local filetype = vim.bo.filetype
+--   local bufname = vim.fn.bufname('%')
+--
+--   if filetype == 'fugitive' and bufname:match('^fugitive://') then
+--     vim.cmd('bd!')
+--   end
+--
+--   local args = opts.args or ''
+--   if args == '' then
+--     vim.cmd('Git')
+--   else
+--     args = args:gsub("'", "\\'")
+--     vim.cmd("Git " .. args)
+--   end
+-- end, { nargs = '*', complete = 'shellcmd' })
