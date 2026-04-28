@@ -61,7 +61,7 @@
         specialArgs = { inherit inputs; };
 
         modules = [
-          ./configuration.nix
+          ./hosts/buggy/configuration.nix
           ./overlays.nix
 
           nixos-hardware.nixosModules.microsoft-surface-pro-intel
