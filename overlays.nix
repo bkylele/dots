@@ -9,6 +9,14 @@
       kitty = inputs.kitty.packages.${prev.stdenv.hostPlatform.system}.default;
     })
 
+    (final: prev: {
+      hyprlock = inputs.hyprlock.packages.${prev.stdenv.hostPlatform.system}.default;
+    })
+
+    (final: prev: {
+      hypridle = inputs.hypridle.packages.${prev.stdenv.hostPlatform.system}.default;
+    })
+
     # (final: prev: {
     #   niri = inputs.niri.packages.${prev.stdenv.hostPlatform.system}.default;
     # })

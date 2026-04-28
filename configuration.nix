@@ -140,34 +140,41 @@
   };
 
   # System Profile
-  environment.systemPackages = with pkgs; [
-    neovim
-    htop
-    zoxide
-    fzf
-    ripgrep
-    fd
-    bat
-    btop
+  environment.systemPackages =
+    let
+      termPkgs = with pkgs; [
+        neovim
+        htop
+        zoxide
+        fzf
+        ripgrep
+        fd
+        bat
+        btop
+      ];
 
-    brightnessctl
-    wl-clipboard
-    wf-recorder
-    slurp
-    nautilus
-    hyprlock
-    hypridle
-    mako
-    quickshell
-    mpv
-    imv
+      guiPkgs = with pkgs; [
+        brightnessctl
+        wl-clipboard
+        wf-recorder
+        slurp
+        nautilus
+        hyprlock
+        hypridle
+        mako
+        quickshell
+        mpv
+        imv
 
-    kitty
-    fuzzel
-    vesktop
-    catppuccin-cursors.mochaDark
-    xwayland-satellite
-  ];
+        kitty
+        fuzzel
+        vesktop
+        catppuccin-cursors.mochaDark
+        xwayland-satellite
+      ];
+
+    in
+    termPkgs ++ guiPkgs;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

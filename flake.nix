@@ -21,6 +21,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hyprlock = {
+      url = "path:stuff/hyprlock/";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hypridle = {
+      url = "path:stuff/hypridle/";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # niri = {
     #   url = "path:stuff/niri/";
     #   inputs.nixpkgs.follows = "nixpkgs";
