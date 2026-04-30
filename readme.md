@@ -20,8 +20,8 @@ nix run git+https://codeberg.org/bkle/dots#neovim # or any other app
 
 ## TODO
 
-- [X] Wrap neovim
-- [X] Wrap kitty
+- [ ] create nix flake templates
+- [ ] migrate wrappers from flake.nix to default.nix 
 - [ ] Wrap niri
 - [ ] Wrap bash
 - [ ] Wrap quickshell

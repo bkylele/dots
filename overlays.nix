@@ -2,18 +2,9 @@
 {
   nixpkgs.overlays = [
     (final: prev: {
-      neovim = inputs.neovim.packages.${prev.stdenv.hostPlatform.system}.default;
-    })
-
-    (final: prev: {
+      neovim = prev.callPackage ./stuff/nvim/neovim.nix { };
       kitty = inputs.kitty.packages.${prev.stdenv.hostPlatform.system}.default;
-    })
-
-    (final: prev: {
       hyprlock = inputs.hyprlock.packages.${prev.stdenv.hostPlatform.system}.default;
-    })
-
-    (final: prev: {
       hypridle = inputs.hypridle.packages.${prev.stdenv.hostPlatform.system}.default;
     })
 

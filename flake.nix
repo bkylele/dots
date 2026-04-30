@@ -11,11 +11,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    neovim = {
-      url = "path:stuff/nvim/";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     kitty = {
       url = "path:stuff/kitty/";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,16 +26,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # niri = {
-    #   url = "path:stuff/niri/";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
-    # bash = {
-    #   url = "path:stuff/bash/";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
   };
 
   outputs =
@@ -53,7 +38,6 @@
     {
 
       packages.x86_64-linux = {
-        neovim = inputs.neovim.packages.x86_64-linux.default;
         kitty = inputs.kitty.packages.x86_64-linux.default;
       };
 

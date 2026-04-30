@@ -37,7 +37,8 @@ vim.keymap.set('v', '<leader>s', ':s/',             { desc = 'Start substitue on
 vim.keymap.set('n', '<leader>pv', '<cmd>Oil<cr>',                               { desc = 'Open Oil' })
 vim.keymap.set('n', '<leader>u',  '<cmd>UndotreeShow | UndotreeFocus<cr>',      { desc = 'Open and focus Undotree' })
 vim.keymap.set('n', '<c-w><c-g>', '<cmd>NoNeckPain<cr>',                        { desc = 'Toggle NoNeckPain' })
-vim.keymap.set('n', '<leader>g',  '<cmd>G log --oneline --graph | G<cr>',       { desc = 'Open Git summary' })
+-- vim.keymap.set('n', '<leader>g',  '<cmd>G log --oneline --graph | G<cr>',       { desc = 'Open Git summary' })
+vim.keymap.set('n', '<leader>g',  '<cmd>G<cr>',       { desc = 'Open Git summary' })
 
 local ls = require('luasnip')
 require('luasnip.loaders.from_snipmate').lazy_load()
