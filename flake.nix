@@ -10,22 +10,6 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    kitty = {
-      url = "path:stuff/kitty/";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hyprlock = {
-      url = "path:stuff/hyprlock/";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hypridle = {
-      url = "path:stuff/hypridle/";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   };
 
   outputs =
@@ -36,7 +20,6 @@
       ...
     }@inputs:
     {
-
       nixosConfigurations.buggy = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
 

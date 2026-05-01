@@ -143,7 +143,6 @@
   environment.systemPackages =
     let
       termPkgs = with pkgs; [
-        neovim
         htop
         zoxide
         fzf
@@ -151,6 +150,7 @@
         fd
         bat
         btop
+        neovim-custom
       ];
       guiPkgs = with pkgs; [
         brightnessctl
@@ -158,17 +158,17 @@
         wf-recorder
         slurp
         nautilus
-        hyprlock
-        hypridle
         mako
         quickshell
         mpv
         imv
-        kitty
         fuzzel
         vesktop
         catppuccin-cursors.mochaDark
         xwayland-satellite
+        hyprlock-custom
+        hypridle-custom
+        kitty-custom
       ];
     in
     termPkgs ++ guiPkgs;

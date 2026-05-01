@@ -1,16 +1,14 @@
 {
-    symlinkJoin,
-    kitty,
-    makeWrapper,
+  symlinkJoin,
+  kitty,
+  makeWrapper,
 }:
-{
-  packages.default = symlinkJoin {
-    name = "kitty";
-    paths = [ kitty ];
-    nativeBuildInputs = [ makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/kitty \
-          --set KITTY_CONFIG_DIRECTORY ${./.}
-    '';
-  };
+symlinkJoin {
+  name = "kitty-custom";
+  paths = [ kitty ];
+  nativeBuildInputs = [ makeWrapper ];
+  postBuild = ''
+    wrapProgram $out/bin/kitty \
+        --set KITTY_CONFIG_DIRECTORY ${./.}
+  '';
 }

@@ -2,10 +2,10 @@
 {
   nixpkgs.overlays = [
     (final: prev: {
-      neovim = prev.callPackage ./stuff/nvim/default.nix { };
-      kitty = inputs.kitty.packages.${prev.stdenv.hostPlatform.system}.default;
-      hyprlock = inputs.hyprlock.packages.${prev.stdenv.hostPlatform.system}.default;
-      hypridle = inputs.hypridle.packages.${prev.stdenv.hostPlatform.system}.default;
+      neovim-custom = prev.callPackage ./stuff/nvim/default.nix { };
+      kitty-custom = prev.callPackage ./stuff/kitty/default.nix { };
+      hyprlock-custom = prev.callPackage ./stuff/hyprlock/default.nix { };
+      hypridle-custom = prev.callPackage ./stuff/hypridle/default.nix { };
     })
   ];
 }
