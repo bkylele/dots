@@ -11,6 +11,7 @@ let
     vim-fugitive
     vim-dispatch
     undotree
+    nvim-lspconfig
     nvim-surround
     oil-nvim
     no-neck-pain-nvim

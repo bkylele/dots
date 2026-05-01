@@ -36,6 +36,12 @@ vim.cmd('let loaded_matchparen = 1')
 -- see (:h ui2)
 require('vim._core.ui2').enable({})
 
+-- see (:h lspconfig-all)
+vim.lsp.enable({
+    'clangd',
+    'rust_analyzer',
+})
+
 require("no-neck-pain").setup({
     buffers = {
         left = {
