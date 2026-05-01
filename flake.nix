@@ -28,7 +28,6 @@
           ./overlays.nix
           nixos-hardware.nixosModules.microsoft-surface-pro-intel
           inputs.nix-index-database.nixosModules.default
-          { programs.nix-index-database.comma.enable = true; }
         ];
       };
     };

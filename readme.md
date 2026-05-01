@@ -7,21 +7,15 @@ I like to experiment a lot with workflows, many things are subject to change.
 Using NixOS, you can just do:
 ```bash
 nixos-rebuild switch --flake git+https://codeberg.org/bkle/dots#buggy 
-# or using nh:
-nh os switch git+https://codeberg.org/bkle/dots
-```
-
-I'm working on making all of my software configurations available through this
-repository's flake, so my configuration per app is available through:
-
-```bash
-nix run git+https://codeberg.org/bkle/dots#neovim # or any other app
+# or equivalently
+git clone https://codeberg.org/bkle/dots
+cd dots
+nixos-rebuild switch --flake .
 ```
 
 ## TODO
 
 - [ ] create nix flake templates
-- [ ] migrate wrappers from flake.nix to default.nix 
 - [ ] Wrap niri
 - [ ] Wrap bash
 - [ ] Wrap quickshell
@@ -29,5 +23,10 @@ nix run git+https://codeberg.org/bkle/dots#neovim # or any other app
 
 ## Quirks/Workarounds
 
-Unlike on Arch linux, previous quirks and workarounds are now embedded in the
-configuration (hurray nix!).
+Sometimes during `nixos-rebuild`, lower-end machines might run out of RAM. Also
+on surface devices, thermal throttling is bugged out by default. To mitigate
+this, make sure to limit the maximum jobs and cores used for the build:
+
+```nix
+nixos-rebuild switch --flake DOTS_PATH --max-jobs 1 --cores 1
+```

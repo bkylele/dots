@@ -110,6 +110,7 @@
       };
     };
   };
+  programs.nix-index-database.comma.enable = true;
 
   programs.direnv.enable = true;
   programs.firefox.enable = true;
