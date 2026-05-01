@@ -152,7 +152,6 @@
         bat
         btop
       ];
-
       guiPkgs = with pkgs; [
         brightnessctl
         wl-clipboard
@@ -165,14 +164,12 @@
         quickshell
         mpv
         imv
-
         kitty
         fuzzel
         vesktop
         catppuccin-cursors.mochaDark
         xwayland-satellite
       ];
-
     in
     termPkgs ++ guiPkgs;
 

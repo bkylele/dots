@@ -37,17 +37,12 @@
     }@inputs:
     {
 
-      packages.x86_64-linux = {
-        kitty = inputs.kitty.packages.x86_64-linux.default;
-      };
-
       nixosConfigurations.buggy = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
 
         modules = [
           ./hosts/buggy/configuration.nix
           ./overlays.nix
-
           nixos-hardware.nixosModules.microsoft-surface-pro-intel
           inputs.nix-index-database.nixosModules.default
           { programs.nix-index-database.comma.enable = true; }
