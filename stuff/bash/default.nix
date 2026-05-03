@@ -9,6 +9,6 @@ symlinkJoin {
   nativeBuildInputs = [ makeWrapper ];
   postBuild = ''
     wrapProgram $out/bin/bash \
-        --add-flags "--init-file ${./.bashrc}"
+        --add-flags "--init-file ${./bashrc}"
   '';
 }
