@@ -23,11 +23,10 @@ alias cd='z'
 alias cat='bat'
 alias htop='btop'
 alias open='xdg-open'
+alias vit='vi -c "Git log | only | vert Git"'
 
-alias bashconf='vi ~/.bashrc && source ~/.bashrc'
 alias nixconf='cd ~/dots/ && vi ~/dots/hosts/buggy/configuration.nix && cd -'
 alias nixsw='nh os switch ~/dots/'
-alias vit='vi -c "Git log | only | vert Git"'
 
 eval "$(fzf --bash)"
 eval "$(zoxide init bash)"
