@@ -28,6 +28,8 @@ vim.o.termguicolors = true
 vim.o.conceallevel = 2
 vim.o.winborder = 'double'
 
+vim.cmd('colorscheme retrobox')
+
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.tohtml')
 -- :noh after 4 secs or on entering insert
