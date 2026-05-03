@@ -49,6 +49,11 @@
   # Surface GPE/Lid driver to enable wakeup from suspend via the lid.
   boot.blacklistedKernelModules = [ "surface_gpe" ];
 
+  swapDevices = [{
+      device = "/swapfile";
+      size = 4*1024; # in mebibytes
+  }];
+
   networking.hostName = "buggy";
 
   networking.networkmanager.enable = true;
@@ -144,6 +149,7 @@
   environment.systemPackages =
     let
       termPkgs = with pkgs; [
+        bash-custom
         htop
         zoxide
         fzf
