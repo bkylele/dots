@@ -8,9 +8,9 @@ Using NixOS, you can just do:
 ```bash
 nixos-rebuild switch --flake git+https://codeberg.org/bkle/dots#buggy 
 # or equivalently
-git clone https://codeberg.org/bkle/dots
-cd dots
-nixos-rebuild switch --flake .
+git clone https://codeberg.org/bkle/dots && \
+    cd dots && \
+    nixos-rebuild switch --flake .
 ```
 
 ## TODO
