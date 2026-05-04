@@ -168,7 +168,6 @@
         catppuccin-cursors.mochaDark
         xwayland-satellite
         hyprlock-custom
-        hypridle-custom
         swayidle-custom
         kitty-custom
       ];
