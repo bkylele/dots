@@ -45,10 +45,12 @@
   # Surface GPE/Lid driver to enable wakeup from suspend via the lid.
   boot.blacklistedKernelModules = [ "surface_gpe" ];
 
-  swapDevices = [{
+  swapDevices = [
+    {
       device = "/swapfile";
-      size = 4*1024; # in mebibytes
-  }];
+      size = 4 * 1024; # in mebibytes
+    }
+  ];
 
   networking.hostName = "buggy";
 
@@ -58,11 +60,10 @@
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "America/Los_Angeles";
 
-  environment.sessionVariables = {
-    XDG_CACHE_HOME = "$HOME/.cache";
-    XDG_CONFIG_HOME = "$HOME/.config";
-    XDG_DATA_HOME = "$HOME/.local/share";
-    XDG_STATE_HOME = "$HOME/.local/state";
+  environment.sessionVariables = rec {
+    XDG_BIN_HOME = "$HOME/.local/bin";
+    PATH = [ "${XDG_BIN_HOME}" ];
+    HISTFILE = "$HOME/.local/state/.bash_history";
   };
 
   fonts.packages = with pkgs; [
