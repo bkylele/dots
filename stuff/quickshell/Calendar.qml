@@ -4,170 +4,228 @@ import QtQuick.Layouts
 Item {
     id: root
     width: 320
-    height: 230
+    height: 265
 
     property date currentMonth: new Date()
+    property date today: new Date()
 
-    property int daysInMonth: {
-        // Retreive the # of days in the month by getting the 0th day of
-        // the next month, equivalently the last day of this one.
-        var d = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
-        return d.getDate()
-    }
-    property int daysInPrevMonth: {
-        // Same as above, but retrieves days in the previous month
-        var d = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0)
-        return d.getDate()
-    }
-    property int firstDayOfMonth: {
-        // Retrieve what day the first of the month lies on
-        // 0 => Sunday, 1 => Monday, ...
-        var d = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
-        return d.getDay()
-    }
-    property int lastDayOfMonth: {
-        // Last day of the month
-        var d = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
-        return d.getDay()
-    }
+    // Helper functions for month logic
+    function getDaysInMonth(date) { return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate(); }
+    function getDaysInPrevMonth(date) { return new Date(date.getFullYear(), date.getMonth(), 0).getDate(); }
+    function getFirstDayOfMonth(date) { return new Date(date.getFullYear(), date.getMonth(), 1).getDay(); }
+    function getLastDayOfMonth(date) { return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDay(); }
 
     function msUntilMidnight() {
         var now = new Date()
-        var midnight = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate() + 1,
-            0, 0, 0
-        )
+        var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0)
         return midnight - now
     }
-
 
     Timer {
         id: midnightTimer
         repeat: false
         running: true
         interval: msUntilMidnight()
-
         onTriggered: {
-            // Update to today's date
-            currentMonth = new Date()
+            today = new Date()
             interval = msUntilMidnight()
             start()
         }
     }
 
+    // Sync currentMonth with ListView
+    onCurrentMonthChanged: {
+        var targetIndex = (currentMonth.getFullYear() - 2000) * 12 + currentMonth.getMonth();
+        if (monthList.currentIndex !== targetIndex) {
+            monthList.currentIndex = targetIndex;
+        }
+    }
+
     // Header with month name & navigation
-    Row {
+    Item {
+        id: header
         anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 40
 
         Rectangle {
-            width: 24; height: 24
-            color: "transparent"
-            Text { anchors.centerIn: parent; text: "<" }
+            id: prevButton
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: 32; height: 32
+            radius: 16
+            color: prevMouse.containsMouse ? "#EEEEEE" : "transparent"
+            Text { anchors.centerIn: parent; text: "<"; font.pixelSize: 18 }
             MouseArea {
+                id: prevMouse
                 anchors.fill: parent
-                onClicked: {
-                    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
-                }
+                hoverEnabled: true
+                onClicked: monthList.decrementCurrentIndex()
             }
         }
 
-        Text {
-            text: Qt.formatDate(currentMonth, "MMMM yyyy")
-            font.bold: true
-            font.pixelSize: 16
+        Rectangle {
+            id: monthYearButton
+            anchors.centerIn: parent
+            width: monthYearText.contentWidth + 20
+            height: 32
+            radius: 16
+            color: monthYearMouse.containsMouse ? "#EEEEEE" : "transparent"
+
+            Text {
+                id: monthYearText
+                anchors.centerIn: parent
+                text: Qt.formatDate(currentMonth, "MMMM yyyy")
+                font.bold: true
+                font.pixelSize: 18
+                color: "#333333"
+            }
+
+            MouseArea {
+                id: monthYearMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: currentMonth = new Date()
+            }
         }
 
         Rectangle {
-            width: 24; height: 24
-            color: "transparent"
-            Text { anchors.centerIn: parent; text: ">" }
+            id: nextButton
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: 32; height: 32
+            radius: 16
+            color: nextMouse.containsMouse ? "#EEEEEE" : "transparent"
+            Text { anchors.centerIn: parent; text: ">"; font.pixelSize: 18 }
             MouseArea {
+                id: nextMouse
                 anchors.fill: parent
-                onClicked: {
-                    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
+                hoverEnabled: true
+                onClicked: monthList.incrementCurrentIndex()
+            }
+        }
+    }
+
+    // Stationary Day Labels
+    Row {
+        id: dayLabels
+        anchors.top: header.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 0
+        Repeater {
+            model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+            delegate: Item {
+                width: 40; height: 28
+                Text {
+                    text: modelData
+                    font.bold: true
+                    font.pixelSize: 12
+                    anchors.centerIn: parent
+                    color: "#666666"
                 }
             }
         }
     }
 
-    GridLayout {
-        id: dayGrid
-        columns: 7
-        anchors.top: parent.top
-        anchors.topMargin: 30
-        anchors.horizontalCenter: parent.horizontalCenter
-
-        Rectangle{ width: 28; height: 28; Text { text: "Sun"; font.bold: true; anchors.centerIn: parent } Layout.alignment: Qt.AlignHCenter }
-        Rectangle{ width: 28; height: 28; Text { text: "Mon"; font.bold: true; anchors.centerIn: parent } Layout.alignment: Qt.AlignHCenter }
-        Rectangle{ width: 28; height: 28; Text { text: "Tue"; font.bold: true; anchors.centerIn: parent } Layout.alignment: Qt.AlignHCenter }
-        Rectangle{ width: 28; height: 28; Text { text: "Wed"; font.bold: true; anchors.centerIn: parent } Layout.alignment: Qt.AlignHCenter }
-        Rectangle{ width: 28; height: 28; Text { text: "Thu"; font.bold: true; anchors.centerIn: parent } Layout.alignment: Qt.AlignHCenter }
-        Rectangle{ width: 28; height: 28; Text { text: "Fri"; font.bold: true; anchors.centerIn: parent } Layout.alignment: Qt.AlignHCenter }
-        Rectangle{ width: 28; height: 28; Text { text: "Sat"; font.bold: true; anchors.centerIn: parent } Layout.alignment: Qt.AlignHCenter }
-
-        // Fill out the grid with days of the previous month
-        Repeater {
-            model: firstDayOfMonth // empty slots before day 1
-            delegate: Rectangle {
-                width: 40; height: 28
-                radius: 14
-                border.color: "#808080"
-                color: "transparent"
-
-                Text {
-                    color: "gray"
-                    anchors.centerIn: parent
-                    text: index + daysInPrevMonth - firstDayOfMonth + 1
-                }
+    // Sliding Month Grid
+    ListView {
+        id: monthList
+        anchors.top: dayLabels.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        
+        orientation: ListView.Horizontal
+        snapMode: ListView.SnapOneItem
+        highlightRangeMode: ListView.StrictlyEnforceRange
+        clip: true
+        
+        // Make the animation snappy
+        highlightMoveDuration: 250
+        
+        model: 1200 // 100 years of months starting from year 2000
+        currentIndex: (currentMonth.getFullYear() - 2000) * 12 + currentMonth.getMonth()
+        
+        onCurrentIndexChanged: {
+            var date = new Date(2000, currentIndex, 1);
+            if (date.getMonth() !== currentMonth.getMonth() || date.getFullYear() !== currentMonth.getFullYear()) {
+                currentMonth = date;
             }
         }
 
-        // This month
-        Repeater {
-            model: daysInMonth
-            delegate: Rectangle {
-                width: 40; height: 28
-                radius: 14
-                color: {
-                    var today = new Date()
-                    var isToday =
-                        today.getDate() === (index + 1) &&
-                        today.getMonth() === currentMonth.getMonth() &&
-                        today.getFullYear() === currentMonth.getFullYear()
-                    return isToday ? "#ff6666" : "transparent"
+        delegate: Item {
+            width: monthList.width
+            height: monthList.height
+            
+            property date monthDate: new Date(2000, index, 1)
+            property int daysInMonth: getDaysInMonth(monthDate)
+            property int daysInPrevMonth: getDaysInPrevMonth(monthDate)
+            property int firstDayOfMonth: getFirstDayOfMonth(monthDate)
+            property int lastDayOfMonth: getLastDayOfMonth(monthDate)
+
+            GridLayout {
+                columns: 7
+                rowSpacing: 4
+                columnSpacing: 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: 5
+
+                // Prev month padding
+                Repeater {
+                    model: firstDayOfMonth
+                    delegate: Rectangle {
+                        width: 40; height: 28
+                        radius: 14
+                        color: "transparent"
+                        Text {
+                            color: "#BBBBBB"
+                            anchors.centerIn: parent
+                            text: index + daysInPrevMonth - firstDayOfMonth + 1
+                        }
+                    }
                 }
-                border.color: "#808080"
 
-                Text {
-                    anchors.centerIn: parent
-                    text: index + 1
+                // Current month
+                Repeater {
+                    model: daysInMonth
+                    delegate: Rectangle {
+                        width: 40; height: 28
+                        radius: 14
+                        color: {
+                            var isToday = today.getDate() === (index + 1) &&
+                                          today.getMonth() === monthDate.getMonth() &&
+                                          today.getFullYear() === monthDate.getFullYear()
+                            return isToday ? "#ff6666" : "transparent"
+                        }
+                        
+                        Text {
+                            anchors.centerIn: parent
+                            text: index + 1
+                            color: {
+                                var isToday = today.getDate() === (index + 1) &&
+                                              today.getMonth() === monthDate.getMonth() &&
+                                              today.getFullYear() === monthDate.getFullYear()
+                                return isToday ? "white" : "#333333"
+                            }
+                        }
+                    }
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: console.log("Clicked day", index + 1)
-                }
-            }
-        }
-
-        // Next month
-        Repeater {
-            model: 6 - lastDayOfMonth // slots after last day of month
-
-            delegate: Rectangle {
-                width: 40; height: 28
-                radius: 14
-                border.color: "#888"
-                color: "transparent"
-
-                Text {
-                    color: "gray"
-                    anchors.centerIn: parent
-                    text: index + 1
+                // Next month padding
+                Repeater {
+                    model: 6 - lastDayOfMonth
+                    delegate: Rectangle {
+                        width: 40; height: 28
+                        radius: 14
+                        color: "transparent"
+                        Text {
+                            color: "#BBBBBB"
+                            anchors.centerIn: parent
+                            text: index + 1
+                        }
+                    }
                 }
             }
         }

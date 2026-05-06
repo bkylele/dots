@@ -4,18 +4,18 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    width: 10
-    height: 100
+    
+    Layout.fillWidth: false
+    Layout.preferredWidth: 20 // Fixed width for the whole component column
+    Layout.fillHeight: true
 
-    property int cpuUsage: 0
+    property real cpuUsage: 0
 
     Timer {
-        interval: 4000
+        interval: 2000
         repeat: true
         running: true
-        onTriggered: {
-            proc.running = true
-        }
+        onTriggered: proc.running = true
     }
 
     Process {
@@ -27,37 +27,48 @@ Item {
         }
     }
 
-    // TODO boiyoiyoiyoing
     ColumnLayout {
         anchors.fill: parent
-        anchors.centerIn: parent
-        spacing: 4
+        spacing: 8
 
         Item {
-            Layout.minimumWidth: parent.width
-            Layout.minimumHeight: parent.height
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             Rectangle {
-                anchors.fill: parent
-                color: "lightgray"
-                radius: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 4 // Explicit bar thickness
+                height: parent.height
+                color: "#E0E0E0"
+                radius: 2
             }
 
             Rectangle {
+                id: bar
                 anchors.bottom: parent.bottom
-                width: parent.width
-                height: Math.max( parent.height * root.cpuUsage / 100, 8 )
-                color: "gray"
-                radius: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 4 // Explicit bar thickness
+                height: Math.max(parent.height * root.cpuUsage / 100, 4)
+                color: "#4A90E2"
+                radius: 2
+                
+                Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
             }
         }
 
         Text {
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            text: "   "
+            Layout.alignment: Qt.AlignHCenter
+            text: "C"
+            font.bold: true
+            font.pixelSize: 10
+            color: "#666666"
+        }
+
+        Text {
+            Layout.alignment: Qt.AlignHCenter
+            text: Math.round(root.cpuUsage) + "%"
+            font.pixelSize: 8
+            color: "#888888"
         }
     }
-
 }
-

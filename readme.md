@@ -15,11 +15,13 @@ git clone https://codeberg.org/bkle/dots && \
 
 ## TODO
 
-- [ ] create nix flake templates
-- [ ] Wrap niri
-- [ ] Wrap bash
-- [ ] Wrap quickshell
-
+- create nix flake templates
+- Wrap niri
+- Wrap quickshell
+- quickshell
+    - dashboard
+        - power(?)
+    - app runner
 
 ## Quirks/Workarounds
 

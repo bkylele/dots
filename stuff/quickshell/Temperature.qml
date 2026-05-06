@@ -4,62 +4,81 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    width: 10
-    height: 100
+    
+    Layout.fillWidth: false
+    Layout.preferredWidth: 20
+    Layout.fillHeight: true
 
-    property int temperature: 0
+    property real temperature: 0
 
     Timer {
         interval: 4000
         repeat: true
         running: true
-        onTriggered: {
-            proc.running = true
-        }
+        onTriggered: proc.running = true
     }
 
     Process {
         id: proc
-        command: ["sh", "-c", "sensors | awk '/^Package id 0:/ {print $4}' | tr -d '+°C'"]
+        command: ["cat", "/sys/class/thermal/thermal_zone0/temp"]
         running: true
         stdout: StdioCollector {
-            onStreamFinished: root.temperature = parseFloat(this.text)
+            onStreamFinished: {
+                const val = parseFloat(this.text);
+                if (!isNaN(val)) {
+                    root.temperature = val / 1000;
+                }
+            }
         }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 4
+        spacing: 8
 
         Item {
-            Layout.minimumWidth: parent.width
-            Layout.minimumHeight: parent.height
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             Rectangle {
-                anchors.fill: parent
-                color: "lightgray"
-                radius: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 4
+                height: parent.height
+                color: "#E0E0E0"
+                radius: 2
             }
 
             Rectangle {
+                id: bar
                 anchors.bottom: parent.bottom
-                width: parent.width
-                height: Math.max(Math.min((root.temperature - 35) * 2, 100), 10)
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 4
+                height: Math.max(Math.min((root.temperature - 30) * (parent.height / 70), parent.height), 4)
                 color: {
-                    if (root.temperature >= 75) { return "red" }
-                    if (root.temperature >= 55) { return "orange" }
-                    return "lightblue"
+                    if (root.temperature >= 80) return "#FF4B4B"
+                    if (root.temperature >= 60) return "#F5A623"
+                    return "#4A90E2"
                 }
-                radius: 5
+                radius: 2
+                
+                Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
+                Behavior on color { ColorAnimation { duration: 500 } }
             }
         }
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text: "  "
+            text: "T"
+            font.bold: true
+            font.pixelSize: 10
+            color: "#666666"
+        }
+
+        Text {
+            Layout.alignment: Qt.AlignHCenter
+            text: Math.round(root.temperature) + "°"
+            font.pixelSize: 8
+            color: "#888888"
         }
     }
-
 }
-

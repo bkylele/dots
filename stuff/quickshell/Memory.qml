@@ -4,23 +4,23 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    width: 10
-    height: 100
+    
+    Layout.fillWidth: false
+    Layout.preferredWidth: 20
+    Layout.fillHeight: true
 
-    property int memUsage: 0
+    property real memUsage: 0
 
     Timer {
-        interval: 4000
+        interval: 3000
         repeat: true
         running: true
-        onTriggered: {
-            proc.running = true
-        }
+        onTriggered: proc.running = true
     }
 
     Process {
         id: proc
-        command: ["sh", "-c", "top -bn1 | grep 'MiB Mem' | awk '{printf $8/$4 * 100}'"]
+        command: ["sh", "-c", "free | grep Mem | awk '{print $3/$2 * 100}'"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: root.memUsage = parseFloat(this.text)
@@ -29,34 +29,46 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.centerIn: parent
-        spacing: 4
+        spacing: 8
 
         Item {
-            Layout.minimumWidth: parent.width
-            Layout.minimumHeight: parent.height
-            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             Rectangle {
-                anchors.fill: parent
-                color: "lightgray"
-                radius: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 4
+                height: parent.height
+                color: "#E0E0E0"
+                radius: 2
             }
 
             Rectangle {
+                id: bar
                 anchors.bottom: parent.bottom
-                width: parent.width
-                height: Math.max( parent.height * root.memUsage / 100, 8 )
-                color: "gray"
-                radius: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 4
+                height: Math.max(parent.height * root.memUsage / 100, 4)
+                color: "#50E3C2"
+                radius: 2
+                
+                Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
             }
         }
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text: " "
+            text: "M"
+            font.bold: true
+            font.pixelSize: 10
+            color: "#666666"
+        }
+
+        Text {
+            Layout.alignment: Qt.AlignHCenter
+            text: Math.round(root.memUsage) + "%"
+            font.pixelSize: 8
+            color: "#888888"
         }
     }
-
 }
-
