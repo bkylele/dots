@@ -33,6 +33,7 @@ vim.keymap.set('v', 'gy', 'ygvgc',  { remap = true })
 vim.keymap.set('n', '<leader>pf', ':find<leader>',  { desc = 'Find file' })
 vim.keymap.set('n', '<leader>ps', ':grep<leader>',  { desc = 'Grep' })
 vim.keymap.set('v', '<leader>s', ':s/',             { desc = 'Start substitue on current selection' })
+vim.keymap.set('v', '<leader>n', ':norm<space>',    { desc = 'Start norm on current selection' })
 
 vim.keymap.set('n', '<leader>pv', '<cmd>Oil<cr>',                               { desc = 'Open Oil' })
 vim.keymap.set('n', '<leader>u',  '<cmd>UndotreeShow | UndotreeFocus<cr>',      { desc = 'Open and focus Undotree' })

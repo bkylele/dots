@@ -45,6 +45,19 @@
   # Surface GPE/Lid driver to enable wakeup from suspend via the lid.
   boot.blacklistedKernelModules = [ "surface_gpe" ];
 
+  services.thermald.enable = true;
+  services.auto-cpufreq.enable = true;
+  services.auto-cpufreq.settings = {
+    battery = {
+      governor = "powersave";
+      turbo = "never";
+    };
+    charger = {
+      governor = "performance";
+      turbo = "auto";
+    };
+  };
+
   swapDevices = [
     {
       device = "/swapfile";
@@ -74,19 +87,6 @@
     nerd-fonts.jetbrains-mono
   ];
 
-  services.thermald.enable = true;
-  services.auto-cpufreq.enable = true;
-  services.auto-cpufreq.settings = {
-    battery = {
-      governor = "powersave";
-      turbo = "never";
-    };
-    charger = {
-      governor = "performance";
-      turbo = "auto";
-    };
-  };
-
   programs.nh.enable = true;
   programs.git = {
     enable = true;
@@ -110,12 +110,14 @@
     };
   };
   programs.nix-index-database.comma.enable = true;
-
   programs.direnv.enable = true;
   programs.firefox.enable = true;
   programs.niri.enable = true;
-  services.gvfs.enable = true; # required for certain nautilus functions
 
+  nixpkgs.config.allowUnfree = true;
+  programs.steam.enable = true;
+
+  services.gvfs.enable = true; # required for certain nautilus functions
   services.greetd = {
     enable = true;
     settings = {
@@ -126,9 +128,6 @@
       };
     };
   };
-
-  nixpkgs.config.allowUnfree = true;
-  programs.steam.enable = true;
 
   # User Profiles
   users.users.brian = {
@@ -143,7 +142,6 @@
   environment.systemPackages =
     let
       termPkgs = with pkgs; [
-        bash-custom
         htop
         zoxide
         fzf
@@ -151,6 +149,8 @@
         fd
         bat
         btop
+        xdg-user-dirs
+        bash-custom
         neovim-custom
       ];
       guiPkgs = with pkgs; [
@@ -163,8 +163,8 @@
         quickshell
         mpv
         imv
-        fuzzel
-        vesktop
+        rofi
+        (discord.override { withVencord = true; })
         catppuccin-cursors.mochaDark
         xwayland-satellite
         hyprlock-custom

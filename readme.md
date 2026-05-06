@@ -20,8 +20,14 @@ git clone https://codeberg.org/bkle/dots && \
 - Wrap quickshell
 - quickshell
     - dashboard
-        - power(?)
+        - media control
+        - resource monitor
+            - check out caelestia dots? https://github.com/caelestia-dots/shell
+    - power
+    - audio
     - app runner
+    - keybinds
+    - notifications
 
 ## Quirks/Workarounds
 

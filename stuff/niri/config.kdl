@@ -1,5 +1,5 @@
 // Check the wiki for a full description of the configuration:
-// ====== https://yalter.github.io/niri/Configuration:-Introduction ======
+// ====== https://niri-wm.github.io/niri/Configuration:-Introduction ======
 
 // ====== https://niri-wm.github.io/niri/Configuration:-Input ======
 input {
@@ -95,18 +95,13 @@ animations {
 
 
 // ====== https://niri-wm.github.io/niri/Configuration:-Window-Rules ======
-// Open the Firefox picture-in-picture player as floating by default.
-window-rule {
-    // This app-id regular expression will work for both:
-    // - host Firefox (app-id is "firefox")
-    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-    open-floating true
-}
 
-// Open file manager as floating 
+// Open certain apps as floating
 window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
     match app-id="Nautilus"
+    match app-id="mpv"
+    match app-id="imv"
     open-floating true
 }
 
@@ -121,7 +116,8 @@ window-rule {
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    Mod+Shift+Alt+L hotkey-overlay-title="Lock the screen"  { spawn "hyprlock"; }
+    Ctrl+Alt+L hotkey-overlay-title="Lock the screen"  { spawn "hyprlock"; }
+    Ctrl+Alt+I hotkey-overlay-title="Toggle idle daemon" { spawn "~/.config/niri/toggle_idle.sh"; }
 
     Mod+Q repeat=false { close-window; }
     Mod+O repeat=false { toggle-overview; }
@@ -129,7 +125,7 @@ binds {
 
     Mod+T hotkey-overlay-title="Open a Terminal"            { spawn "kitty"; }
     Mod+B hotkey-overlay-title="Open a Browser"             { spawn "firefox"; }
-    Mod+P hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
+    Mod+P hotkey-overlay-title="Run an Application: rofi"   { spawn-sh "rofi -show run"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
@@ -270,9 +266,9 @@ binds {
     //
     // The allow-inhibiting=false property can be applied to other binds as well,
     // which ensures niri always processes them, even when an inhibitor is active.
-    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    Ctrl+Alt+End allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    // Ctrl+Alt+End allow-inhibiting=false { spawn-sh ", notify-send 'hello'"; }
 
-    // The quit action will show a confirmation dialog to avoid accidental exits.
     Ctrl+Alt+Delete { quit; }
 }
 
@@ -281,8 +277,9 @@ binds {
 
 // Startup apps
 spawn-at-startup "hyprlock"
-spawn-at-startup "hypridle"
+spawn-at-startup "swayidle"
 spawn-at-startup "~/.config/niri/battery_notif.sh"
+spawn-at-startup "quickshell"
 
 hotkey-overlay {
     // disable "Important Hotkeys" pop-up at startup
