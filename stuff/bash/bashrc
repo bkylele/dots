@@ -11,6 +11,8 @@ export EDITOR="nvim"
 export TERMINAL="kitty"
 
 alias ..='cd .. && ls -la'
+alias vpnup='sudo systemctl start wg-quick-wg0'
+alias vpndown='sudo systemctl stop wg-quick-wg0'
 alias ...='cd ../.. && ls -la'
 alias -- -='cd -'
 alias ls='ls --color=auto'

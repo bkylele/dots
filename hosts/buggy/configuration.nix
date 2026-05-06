@@ -70,6 +70,23 @@
   networking.networkmanager.enable = true;
   hardware.bluetooth.enable = true;
 
+  networking.firewall.allowedUDPPorts = [ 51820 ];
+  networking.wg-quick.interfaces.wg0 = {
+    autostart = false;
+    address = [ "10.0.0.3/24" ];
+    privateKeyFile = "/etc/wireguard/private.key";
+
+    peers = [
+      {
+        # wapol (Server)
+        publicKey = "YwDqFM0LRzBorhFpYOrdCCNN/vgpgN36K/4vo4ObjWY=";
+        allowedIPs = [ "10.0.0.0/24" ];
+        endpoint = "72.211.196.8:51820";
+        persistentKeepalive = 25;
+      }
+    ];
+  };
+
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "America/Los_Angeles";
 
@@ -112,7 +129,7 @@
   programs.nix-index-database.comma.enable = true;
   programs.direnv.enable = true;
   programs.firefox.enable = true;
-  programs.niri.enable = true;
+  # programs.niri.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   programs.steam.enable = true;
@@ -167,6 +184,7 @@
         (discord.override { withVencord = true; })
         catppuccin-cursors.mochaDark
         xwayland-satellite
+        niri-custom
         hyprlock-custom
         swayidle-custom
         kitty-custom
