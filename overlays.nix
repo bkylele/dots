@@ -7,6 +7,7 @@
       kitty-custom = prev.callPackage ./stuff/kitty/default.nix { };
       hyprlock-custom = prev.callPackage ./stuff/hyprlock/default.nix { };
       swayidle-custom = prev.callPackage ./stuff/swayidle/default.nix { };
+      niri-custom = prev.callPackage ./stuff/niri/default.nix { };
     })
   ];
 }

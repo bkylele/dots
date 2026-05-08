@@ -1,4 +1,4 @@
-#!/usr/bin/env -S nix run nixpkgs#bash
+#!/usr/bin/env -S nix shell nixpkgs#bash nixpkgs#fuzzel --command bash
 
 options="Poweroff\nReboot\nSuspend"
 choice=$(echo -e "$options" | fuzzel --dmenu)
