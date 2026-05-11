@@ -5,10 +5,10 @@
   inputs,
   ...
 }:
-
 {
   imports = [
     ./hardware-configuration.nix
+    ./hardware-extra.nix
   ];
 
   nix = {
@@ -32,29 +32,6 @@
     grub = {
       efiSupport = true;
       device = "nodev";
-    };
-  };
-
-  # pin control modules aren't loaded correctly for surface.
-  # this fixes physical buttons not working
-  boot.initrd.availableKernelModules = [ "pinctrl_tigerlake" ];
-
-  # Suspend when pressing the power
-  services.logind.settings.Login.HandlePowerKey = "suspend";
-
-  # Surface GPE/Lid driver to enable wakeup from suspend via the lid.
-  boot.blacklistedKernelModules = [ "surface_gpe" ];
-
-  services.thermald.enable = true;
-  services.auto-cpufreq.enable = true;
-  services.auto-cpufreq.settings = {
-    battery = {
-      governor = "powersave";
-      turbo = "never";
-    };
-    charger = {
-      governor = "performance";
-      turbo = "auto";
     };
   };
 
@@ -129,7 +106,7 @@
   programs.nix-index-database.comma.enable = true;
   programs.direnv.enable = true;
   programs.firefox.enable = true;
-  # programs.niri.enable = true;
+  programs.niri.enable = true;
   programs.steam.enable = true;
 
   services.gvfs.enable = true; # required for certain nautilus functions
@@ -207,5 +184,4 @@
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.11"; # Did you read the comment?
-
 }
