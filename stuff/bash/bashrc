@@ -36,7 +36,7 @@ eval "$(direnv hook bash)"
 
 flakify() {
   if [ ! -e flake.nix ]; then
-    nix flake new -t github:nix-community/nix-direnv .
+    nix flake new -t git+https://codeberg.org/bkle/flakes .
   fi
 
   if [ ! -e .envrc ]; then

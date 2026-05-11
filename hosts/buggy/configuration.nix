@@ -108,6 +108,7 @@
   programs.firefox.enable = true;
   programs.niri.enable = true;
   programs.steam.enable = true;
+  nixpkgs.config.allowUnfree = true;
 
   services.gvfs.enable = true; # required for certain nautilus functions
   services.greetd = {

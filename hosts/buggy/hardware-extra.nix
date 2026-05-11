@@ -1,6 +1,9 @@
 {
   config,
   lib,
+  pkgs,
+  inputs,
+  ...
 }:
 {
   # pin control modules aren't loaded correctly for surface.
