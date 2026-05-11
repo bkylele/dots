@@ -65,17 +65,21 @@
     privateKeyFile = "/var/lib/wireguard/private.key";
 
     peers = [
-      { # Brian Phone
-        publicKey = "rDP2R5LHPCjPTwIsKu4g2E4pO0HfyMinOTGFrcGPQUk=";
-        allowedIPs = [ "10.0.0.2/32" ];
-      }
       { # Buggy (Main PC)
         publicKey = "RcYqpYo5jPqjAhgnHpOYBM1AHERBKtseXV6medct6yI=";
         allowedIPs = [ "10.0.0.3/32" ];
       }
+      { # Brian Phone
+        publicKey = "rDP2R5LHPCjPTwIsKu4g2E4pO0HfyMinOTGFrcGPQUk=";
+        allowedIPs = [ "10.0.0.2/32" ];
+      }
       { # Dad's PC
         publicKey = "dKwSaeCWZwNLQ7DH/8IIR8M7Wl/uFO5JwSpL5x2wLH8=";
         allowedIPs = [ "10.0.0.4/32" ];
+      }
+      { # Dad's Phone
+        publicKey = "9FMu84P1pLjl20P65t5d4ZnKLV9bgVsR1RwQxAZIxY=";
+        allowedIPs = [ "10.0.0.5/32" ];
       }
     ];
   };
