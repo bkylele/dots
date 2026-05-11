@@ -78,7 +78,7 @@
         allowedIPs = [ "10.0.0.4/32" ];
       }
       { # Dad's Phone
-        publicKey = "9FMu84P1pLjl20P65t5d4ZnKLV9bgVsR1RwQxAZIxY=";
+        publicKey = "9FMu84P1pLjl20P65t5d4Z5nKLV9bgVsR1RwQxAZIxY=";
         allowedIPs = [ "10.0.0.5/32" ];
       }
     ];
@@ -102,22 +102,23 @@
         "guest account" = "nobody";
         "map to guest" = "bad user";
       };
-      public = {
-        path = "/srv/nas/public";
-        browseable = "yes";
-        "read only" = "no";
-        "guest ok" = "yes";
-        "create mask" = "0644";
-        "directory mask" = "0755";
-        "force user" = "nobody";
-        "force group" = "nogroup";
+      brian = {
+          path = "/srv/nas/brian";
+          browseable = "yes";
+          "read only" = "no";
+          "guest ok" = "no";
+          "valid users" = "brian";
+          "create mask" = "0600";
+          "force create mode" = "0600";
+          "directory mask" = "0700";
+          "force directory mode" = "0700";
+          "force user" = "brian";
       };
     };
   };
 
   services.filebrowser = {
     enable = true;
-    # Run as nobody/nogroup to match Samba permissions for the public share
     user = "nobody";
     group = "nogroup";
     settings = {
@@ -130,11 +131,8 @@
   # Ensure shared directory exists with correct permissions
   systemd.tmpfiles.rules = [
     "d /srv/nas 0775 nobody nogroup -"
-    "d /srv/nas/public 0775 nobody nogroup -"
     "d /srv/nas/brian 0775 nobody nogroup -"
     "d /srv/nas/family 0775 nobody nogroup -"
-    "L+ /srv/nas/brian/shared - - - - /srv/nas/public"
-    "L+ /srv/nas/family/shared - - - - /srv/nas/public"
     "Z /var/lib/filebrowser 0700 nobody nogroup -"
   ];
 
