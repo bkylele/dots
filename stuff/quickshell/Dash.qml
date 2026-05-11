@@ -305,9 +305,9 @@ PanelWindow {
     MouseArea {
         id: hoverZone
         anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 15
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 300
+        height: 10
         enabled: sg.state !== "expanded"
 
         hoverEnabled: true

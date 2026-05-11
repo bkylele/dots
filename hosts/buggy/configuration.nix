@@ -130,8 +130,6 @@
   programs.direnv.enable = true;
   programs.firefox.enable = true;
   # programs.niri.enable = true;
-
-  nixpkgs.config.allowUnfree = true;
   programs.steam.enable = true;
 
   services.gvfs.enable = true; # required for certain nautilus functions
@@ -183,7 +181,6 @@
         rofi
         (discord.override { withVencord = true; })
         catppuccin-cursors.mochaDark
-        xwayland-satellite
         niri-custom
         hyprlock-custom
         swayidle-custom
