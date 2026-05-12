@@ -29,6 +29,10 @@
         bash = pkgs.callPackage ./stuff/bash/default.nix { };
       };
 
+      templates = {
+        default = { path = ./templates/default; };
+      };
+
       nixosConfigurations = {
         buggy = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; };

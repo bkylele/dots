@@ -26,6 +26,7 @@ alias cat='bat'
 alias htop='btop'
 alias open='xdg-open'
 alias vit='vi -c "Git log | only | vert Git"'
+alias kssh='kitten +kitten ssh'
 
 alias nixconf='cd ~/dots/ && vi ~/dots/hosts/buggy/configuration.nix && cd -'
 alias nixsw='nh os switch ~/dots/'
