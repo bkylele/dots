@@ -19,7 +19,16 @@
       nixos-hardware,
       ...
     }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in
     {
+      packages.${system} = {
+        neovim = pkgs.callPackage ./stuff/nvim/default.nix { };
+        bash = pkgs.callPackage ./stuff/bash/default.nix { };
+      };
+
       nixosConfigurations = {
         buggy = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; };
