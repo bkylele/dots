@@ -159,7 +159,8 @@
         rofi
         (discord.override { withVencord = true; })
         catppuccin-cursors.mochaDark
-        niri-custom
+        xwayland-satellite
+        # niri-custom
         hyprlock-custom
         swayidle-custom
         kitty-custom
