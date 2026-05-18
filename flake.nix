@@ -30,7 +30,9 @@
       };
 
       templates = {
-        default = { path = ./templates/default; };
+        default = {
+          path = ./templates/default;
+        };
       };
 
       nixosConfigurations = {

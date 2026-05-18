@@ -7,15 +7,20 @@
     { self, nixpkgs }:
     let
       eachSystem = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
-      pkgs = eachSystem (system: import nixpkgs { inherit system; });
+      pkgsFor = system: import nixpkgs { inherit system; };
     in
     {
-      devShells = eachSystem (system: {
-        default = pkgs.${system}.mkShell {
-          packages = with pkgs.${system}; [
-            cowsay
-          ];
-        };
-      });
+      devShells = eachSystem (system:
+        let
+          pkgs = pkgsFor system;
+        in
+        {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              cowsay
+            ];
+          };
+        }
+      );
     };
 }

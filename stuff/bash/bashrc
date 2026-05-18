@@ -45,7 +45,7 @@ flakify() {
     direnv allow
   fi
 
-  vi flake.nix
+  vi flake.nix +/cowsay
 }
 
 unfree() {

@@ -116,8 +116,8 @@ window-rule {
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    Ctrl+Alt+L hotkey-overlay-title="Lock the screen"  { spawn "hyprlock"; }
-    Ctrl+Alt+I hotkey-overlay-title="Toggle idle daemon" { spawn "~/.config/niri/toggle_idle.sh"; }
+    Mod+Alt+L hotkey-overlay-title="Lock the screen"  { spawn "hyprlock"; }
+    Mod+Alt+I hotkey-overlay-title="Toggle idle daemon" { spawn "~/.config/niri/toggle_idle.sh"; }
 
     Mod+Q repeat=false { close-window; }
     Mod+O repeat=false { toggle-overview; }
