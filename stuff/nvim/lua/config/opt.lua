@@ -35,6 +35,7 @@ vim.cmd.packadd('nvim.tohtml')
 -- :noh after 4 secs or on entering insert
 vim.cmd.packadd('nohlsearch')
 vim.cmd('let loaded_matchparen = 1')
+
 -- see (:h ui2)
 require('vim._core.ui2').enable({})
 
@@ -44,32 +45,3 @@ vim.lsp.enable({
     'rust_analyzer',
 })
 
-require("no-neck-pain").setup({
-    buffers = {
-        left = {
-            scratchPad = {
-                enabled = true,
-                fileName = "notes",
-                location = "~/dox/",
-            },
-            bo = {
-                filetype = "md"
-            },
-        }
-    },
-})
-
-require('oil').setup({
-    columns = {
-        'icon',
-        'permissions',
-        'size',
-        'mtime',
-    },
-
-    skip_confirm_for_simple_edits = true,
-    watch_for_changes = true,
-    view_options = { show_hidden = true, },
-})
-
-require('lean').setup({ mappings = true })
