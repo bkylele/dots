@@ -53,14 +53,16 @@
   networking.wg-quick.interfaces.wg0 = {
     autostart = false;
     address = [ "10.0.0.3/24" ];
+    dns = [ "10.0.0.1" ]; # Use AdGuard Home on wapol
     privateKeyFile = "/etc/wireguard/private.key";
 
     peers = [
       {
         # wapol (Server)
         publicKey = "YwDqFM0LRzBorhFpYOrdCCNN/vgpgN36K/4vo4ObjWY=";
-        allowedIPs = [ "10.0.0.0/24" ];
-        endpoint = "72.211.196.8:51820";
+        allowedIPs = [ "10.0.0.0/24" "::/0" ]; # Split tunnel
+        # endpoint = "72.211.196.8:51820";
+        endpoint = "68.5.73.23:51820";
         persistentKeepalive = 25;
       }
     ];
@@ -111,6 +113,7 @@
   programs.niri.enable = true;
   programs.steam.enable = true;
   programs.gamescope.enable = true;
+  programs.fuse.userAllowOther = true;
   nixpkgs.config.allowUnfree = true;
 
   services.gvfs.enable = true; # required for certain nautilus functions
@@ -124,6 +127,7 @@
       };
     };
   };
+  services.gnome.gnome-keyring.enable = true;
 
   # User Profiles
   users.users.brian = {
@@ -135,41 +139,37 @@
   };
 
   # System Profile
-  environment.systemPackages =
-    let
-      termPkgs = with pkgs; [
-        htop
-        zoxide
-        fzf
-        ripgrep
-        fd
-        bat
-        btop
-        xdg-user-dirs
-        bash-custom
-        neovim-custom
-      ];
-      guiPkgs = with pkgs; [
-        brightnessctl
-        wl-clipboard
-        wf-recorder
-        slurp
-        nautilus
-        mako
-        quickshell
-        mpv
-        imv
-        rofi
-        (discord.override { withVencord = true; })
-        catppuccin-cursors.mochaDark
-        xwayland-satellite
-        # niri-custom
-        hyprlock-custom
-        swayidle-custom
-        kitty-custom
-      ];
-    in
-    termPkgs ++ guiPkgs;
+  environment.systemPackages = with pkgs; [
+    wireguard-tools
+    htop
+    zoxide
+    fzf
+    ripgrep
+    fd
+    bat
+    btop
+    xdg-user-dirs
+    libnotify
+    brightnessctl
+    wl-clipboard
+    wf-recorder
+    slurp
+    nautilus
+    quickshell
+    mpv
+    imv
+    rofi
+    vesktop
+    catppuccin-cursors.mochaDark
+    xwayland-satellite
+    scrcpy
+    android-tools
+    bash-custom
+    neovim-custom
+    hyprlock-custom
+    swayidle-custom
+    kitty-custom
+  ];
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
