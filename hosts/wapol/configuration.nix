@@ -51,6 +51,7 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     git
+    htop
     vim
     tmux
   ];
@@ -58,6 +59,13 @@
   services.openssh.enable = true;
 
   ### Homelab Services (VPN & NAS)
+  # Enable IP forwarding for VPN routing
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
+  boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = 1;
+
+  # Avoid dropping packets from the VPN due to reverse path filtering
+  networking.firewall.checkReversePath = "loose";
+
   networking.wireguard.interfaces.wg0 = {
     ips = [ "10.0.0.1/24" ];
     listenPort = 51820;
@@ -65,12 +73,12 @@
     # This allows the server to share its internet connection with the VPN clients
     # We use a subshell to find the default network interface (e.g. enp3s0 or wlan0)
     postSetup = ''
-      I=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/gawk '{print $5}')
+      I=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/gawk '{print $5; exit}')
       ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o $I -j MASQUERADE
     '' ;
 
     postShutdown = ''
-      I=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/gawk '{print $5}')
+      I=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/gawk '{print $5; exit}')
       ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.0.0.0/24 -o $I -j MASQUERADE
     '' ;
 
@@ -97,8 +105,28 @@
     ];
   };
 
-  # Open WireGuard port in the firewall
-  networking.firewall.allowedUDPPorts = [ 51820 ];
+  # Open ports for Homelab services
+  networking.firewall.allowedTCPPorts = [ 
+    8080 # Filebrowser
+    3000 # AdGuard Home (Setup/Web)
+    53   # DNS (TCP)
+  ];
+  networking.firewall.allowedUDPPorts = [ 
+    51820 # WireGuard
+    53    # DNS (UDP)
+  ];
+
+  services.immich = {
+    enable = true;
+    port = 2283;
+    host = "0.0.0.0";
+    openFirewall = true;
+    mediaLocation = "/var/lib/immich";
+  };
+
+  services.adguardhome = {
+    enable = true;
+  };
 
   services.samba = {
     enable = true;
@@ -149,10 +177,6 @@
     "Z /var/lib/filebrowser 0700 nobody nogroup -"
   ];
 
-  # Open ports for Filebrowser web UI
-  networking.firewall.allowedTCPPorts = [ 8080 ];
-
-  # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
   #
   # Most users should NEVER change this value after the initial install, for any reason,
