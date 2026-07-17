@@ -11,13 +11,10 @@ export EDITOR="nvim"
 export TERMINAL="kitty"
 
 alias ..='cd .. && ls -la'
-alias vpnup='sudo systemctl start wg-quick-wg0'
-alias vpndown='sudo systemctl stop wg-quick-wg0'
 alias ...='cd ../.. && ls -la'
 alias -- -='cd -'
 alias ls='ls --color=auto'
 alias la='ls -lvah'
-alias l='la'
 alias ll='ls -lvh'
 alias vi=$EDITOR
 alias py='python'
@@ -27,9 +24,11 @@ alias htop='btop'
 alias open='xdg-open'
 alias vit='vi -c "Git log | only | vert Git"'
 alias kssh='kitten +kitten ssh'
-
+alias vpnup='sudo systemctl start wg-quick-wg0'
+alias vpndown='sudo systemctl stop wg-quick-wg0'
 alias nixconf='cd ~/dots/ && vi ~/dots/hosts/buggy/configuration.nix && cd -'
-alias nixsw='nh os switch ~/dots/'
+alias nixsw='nh os switch ~/dots/#buggy'
+alias nixservsw='nh os switch ~/dots/#wapol --target-host brian@wapol'
 
 eval "$(fzf --bash)"
 eval "$(zoxide init bash)"

@@ -15,19 +15,19 @@ git clone https://codeberg.org/bkle/dots && \
 
 ## TODO
 
-- create nix flake templates
 - Wrap niri
 - Wrap quickshell
-- quickshell
     - dashboard
         - media control
         - resource monitor
             - check out caelestia dots? https://github.com/caelestia-dots/shell
-    - power
-    - audio
-    - app runner
-    - keybinds
     - notifications
+        - low battery notification
+    - power
+    - app runner
+    - network/bluetoth
+    - audio
+    - keybinds
 
 ## Quirks/Workarounds
 
