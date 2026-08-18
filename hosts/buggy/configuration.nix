@@ -50,8 +50,13 @@
   hardware.bluetooth.enable = true;
 
   networking.firewall = rec {
-      allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
-      allowedTCPPortRanges = allowedUDPPortRanges ;
+    allowedUDPPortRanges = [
+      {
+        from = 1714;
+        to = 1764;
+      }
+    ];
+    allowedTCPPortRanges = allowedUDPPortRanges;
   };
 
   networking.firewall.allowedUDPPorts = [ 51820 ];
@@ -66,7 +71,10 @@
       {
         # wapol (Server)
         publicKey = "YwDqFM0LRzBorhFpYOrdCCNN/vgpgN36K/4vo4ObjWY=";
-        allowedIPs = [ "10.0.0.0/24" "::/0" ]; # Split tunnel
+        allowedIPs = [
+          "10.0.0.0/24"
+          "::/0"
+        ]; # Split tunnel
         endpoint = "68.5.73.23:51820";
         persistentKeepalive = 25;
       }
@@ -89,7 +97,6 @@
     font-awesome
     nerd-fonts.jetbrains-mono
   ];
-
 
   programs.nix-ld.enable = true;
   programs.nh.enable = true;

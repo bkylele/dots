@@ -1,10 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
   nix = {
     settings.experimental-features = [
@@ -22,31 +26,39 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  swapDevices = [{
-    device = "/swapfile";
-    size = 4*1024;
-  }];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 4 * 1024;
+    }
+  ];
 
   networking.hostName = "wapol";
 
   networking.networkmanager.enable = true;
 
   services.logind.settings.Login = {
-      HandleLidSwitch = "ignore";
-      HandleLidSwitchExternalPower = "ignore";
-      HandleLidSwitchDocked = "ignore";
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
   };
 
   time.timeZone = "America/Los_Angeles";
 
   users.users.brian = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+    ];
     initialPassword = "1234";
   };
 
   # needed to allow nixos-rebuild over ssh
-  nix.settings.trusted-users = [ "root" "@wheel" ];
+  nix.settings.trusted-users = [
+    "root"
+    "@wheel"
+  ];
 
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
@@ -57,7 +69,11 @@
   ];
 
   services.openssh.enable = true;
-  services.tailscale.enable = true;
+
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "server";
+  };
 
   ### Homelab Services (VPN & NAS)
   # Enable IP forwarding for VPN routing
@@ -67,54 +83,15 @@
   # Avoid dropping packets from the VPN due to reverse path filtering
   networking.firewall.checkReversePath = "loose";
 
-  networking.wireguard.interfaces.wg0 = {
-    ips = [ "10.0.0.1/24" ];
-    listenPort = 51820;
-
-    # This allows the server to share its internet connection with the VPN clients
-    # We use a subshell to find the default network interface (e.g. enp3s0 or wlan0)
-    postSetup = ''
-      I=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/gawk '{print $5; exit}')
-      ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o $I -j MASQUERADE
-    '' ;
-
-    postShutdown = ''
-      I=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gawk}/bin/gawk '{print $5; exit}')
-      ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.0.0.0/24 -o $I -j MASQUERADE
-    '' ;
-
-    # This path should contain the private key. 
-    privateKeyFile = "/var/lib/wireguard/private.key";
-
-    peers = [
-      { # Buggy (Main PC)
-        publicKey = "RcYqpYo5jPqjAhgnHpOYBM1AHERBKtseXV6medct6yI=";
-        allowedIPs = [ "10.0.0.3/32" ];
-      }
-      { # Brian Phone
-        publicKey = "rDP2R5LHPCjPTwIsKu4g2E4pO0HfyMinOTGFrcGPQUk=";
-        allowedIPs = [ "10.0.0.2/32" ];
-      }
-      { # Dad's PC
-        publicKey = "dKwSaeCWZwNLQ7DH/8IIR8M7Wl/uFO5JwSpL5x2wLH8=";
-        allowedIPs = [ "10.0.0.4/32" ];
-      }
-      { # Dad's Phone
-        publicKey = "9FMu84P1pLjl20P65t5d4Z5nKLV9bgVsR1RwQxAZIxY=";
-        allowedIPs = [ "10.0.0.5/32" ];
-      }
-    ];
-  };
-
   # Open ports for Homelab services
-  networking.firewall.allowedTCPPorts = [ 
+  networking.firewall.allowedTCPPorts = [
     8080 # Filebrowser
     3000 # AdGuard Home (Setup/Web)
-    53   # DNS (TCP)
+    53 # DNS (TCP)
   ];
-  networking.firewall.allowedUDPPorts = [ 
+  networking.firewall.allowedUDPPorts = [
     51820 # WireGuard
-    53    # DNS (UDP)
+    53 # DNS (UDP)
   ];
 
   services.immich = {
@@ -145,16 +122,16 @@
         "map to guest" = "bad user";
       };
       brian = {
-          path = "/srv/nas/brian";
-          browseable = "yes";
-          "read only" = "no";
-          "guest ok" = "no";
-          "valid users" = "brian";
-          "create mask" = "0600";
-          "force create mode" = "0600";
-          "directory mask" = "0700";
-          "force directory mode" = "0700";
-          "force user" = "brian";
+        path = "/srv/nas/brian";
+        browseable = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "valid users" = "brian";
+        "create mask" = "0600";
+        "force create mode" = "0600";
+        "directory mask" = "0700";
+        "force directory mode" = "0700";
+        "force user" = "brian";
       };
     };
   };
@@ -195,5 +172,4 @@
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "26.05"; # Did you read the comment?
-
 }
