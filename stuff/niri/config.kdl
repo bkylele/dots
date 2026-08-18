@@ -280,6 +280,8 @@ spawn-at-startup "hyprlock"
 spawn-at-startup "swayidle"
 spawn-at-startup "~/.config/niri/battery_notif.sh"
 spawn-at-startup "quickshell"
+spawn-at-startup "iio-niri"
+
 
 hotkey-overlay {
     // disable "Important Hotkeys" pop-up at startup

@@ -16,6 +16,8 @@
   # Surface GPE/Lid driver to enable wakeup from suspend via the lid.
   boot.blacklistedKernelModules = [ "surface_gpe" ];
 
+  hardware.sensor.iio.enable = true;
+
   services.thermald.enable = true;
   services.auto-cpufreq.enable = true;
   services.auto-cpufreq.settings = {

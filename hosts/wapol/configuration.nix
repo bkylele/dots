@@ -57,6 +57,7 @@
   ];
 
   services.openssh.enable = true;
+  services.tailscale.enable = true;
 
   ### Homelab Services (VPN & NAS)
   # Enable IP forwarding for VPN routing

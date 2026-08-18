@@ -5,6 +5,7 @@
   runCommandLocal,
   vimPlugins,
   lib,
+  python3,
 }:
 let
   nvimPlugins = with vimPlugins; [
@@ -17,8 +18,15 @@ let
     no-neck-pain-nvim
     luasnip
     vim-snippets
+
+    # language specific plugins
+    typst-preview-nvim
     lean-nvim
+    Coqtail
+    vim-loves-dafny
   ];
+
+  pythonEnv = python3.withPackages(ps: [ ps.pynvim ]); # required by coqtail
 
   packpath = runCommandLocal "packpath" { } ''
     mkdir -p $out/pack/nvim-custom/{start,opt}
@@ -41,6 +49,7 @@ symlinkJoin {
     wrapProgram $out/bin/nvim \
       --add-flags "--cmd 'set packpath^=${packpath}'" \
       --add-flags "--cmd 'set runtimepath^=${nvimConfigPath}'" \
+      --add-flags "--cmd 'let g:python3_host_prog=\"${pythonEnv}/bin/python3\"'" \
       --add-flags "-u ${nvimConfigPath}/init.lua"
   '';
   meta.mainProgram = "nvim";

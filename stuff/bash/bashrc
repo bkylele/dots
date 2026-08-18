@@ -10,22 +10,26 @@ PS1='\n[\[\033[1;34m\]\w\[\033[1;37m\]] \[\033[1;31m\]$(git branch --show-curren
 export EDITOR="nvim"
 export TERMINAL="kitty"
 
-alias ..='cd .. && ls -la'
-alias ...='cd ../.. && ls -la'
+cd() {
+    z $@
+    ls -lvah
+}
+
+alias ..='cd ..'
+alias ...='cd ../..'
 alias -- -='cd -'
 alias ls='ls --color=auto'
 alias la='ls -lvah'
 alias ll='ls -lvh'
+alias l='la'
 alias vi=$EDITOR
 alias py='python'
-alias cd='z'
 alias cat='bat'
 alias htop='btop'
 alias open='xdg-open'
 alias vit='vi -c "Git log | only | vert Git"'
+alias vid='vi .'
 alias kssh='kitten +kitten ssh'
-alias vpnup='sudo systemctl start wg-quick-wg0'
-alias vpndown='sudo systemctl stop wg-quick-wg0'
 alias nixconf='cd ~/dots/ && vi ~/dots/hosts/buggy/configuration.nix && cd -'
 alias nixsw='nh os switch ~/dots/#buggy'
 alias nixservsw='nh os switch ~/dots/#wapol --target-host brian@wapol'
@@ -34,9 +38,12 @@ eval "$(fzf --bash)"
 eval "$(zoxide init bash)"
 eval "$(direnv hook bash)"
 
-flakify() {
+flake() {
   if [ ! -e flake.nix ]; then
     nix flake new -t git+https://codeberg.org/bkle/dots .
+  else
+    vi flake.nix
+    return
   fi
 
   if [ ! -e .envrc ]; then

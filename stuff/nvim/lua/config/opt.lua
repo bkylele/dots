@@ -43,5 +43,7 @@ require('vim._core.ui2').enable({})
 vim.lsp.enable({
     'clangd',
     'rust_analyzer',
+    'vscoqtop',
+    'dafny',
 })
 
