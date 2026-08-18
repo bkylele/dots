@@ -4,10 +4,6 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    
-    Layout.fillWidth: false
-    Layout.preferredWidth: 20
-    Layout.fillHeight: true
 
     property real memUsage: 0
 

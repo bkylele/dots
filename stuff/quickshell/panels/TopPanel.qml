@@ -3,6 +3,7 @@ import QtQuick.Shapes
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import qs.dashboard
 
 PanelWindow {
     required property var modelData
@@ -33,10 +34,7 @@ PanelWindow {
         Region { item: sg.state === "expanded" ? backgroundDim : hoverZone }
     }
 
-    property bool expanded: false
-    
     // Track if either the trigger zone or the pill itself is being hovered (only for preview mode)
-    // We use a safe check for dashMouseArea which might be disabled
     property bool isHovered: (hoverZone.containsMouse || (dashPreviewMouseArea.enabled && dashPreviewMouseArea.containsMouse)) && sg.state !== "expanded"
 
     onIsHoveredChanged: {
@@ -155,7 +153,7 @@ PanelWindow {
         }
 
         // Content for expanded mode
-        DashMenu {
+        DashboardMenu {
             id: expandedContent
             anchors.fill: parent
             opacity: 0
@@ -165,30 +163,22 @@ PanelWindow {
         }
 
         // Integrated Navigation: Left
-        Item {
+        Rectangle {
             id: leftNavInternal
+            width: 36; height: 36; radius: 18
             anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: 80
+            anchors.leftMargin: 22
+            anchors.verticalCenter: parent.verticalCenter
             visible: sg.state === "expanded"
-            clip: true
-            
-            Rectangle {
-                width: dash.width
-                height: dash.height
-                radius: dash.radius
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                color: leftNavMouse.containsMouse ? "#15000000" : "transparent"
-            }
+            color: leftNavMouse.containsMouse ? "#20000000" : "transparent"
+            Behavior on color { ColorAnimation { duration: 150 } }
 
             Text {
                 anchors.centerIn: parent
-                text: "<"
-                font.pixelSize: 24
-                color: "#66000000"
-                visible: leftNavMouse.containsMouse
+                text: "\u2039"
+                font.pixelSize: 22
+                color: leftNavMouse.containsMouse ? "#88000000" : "#44000000"
+                Behavior on color { ColorAnimation { duration: 150 } }
             }
 
             MouseArea {
@@ -200,30 +190,22 @@ PanelWindow {
         }
 
         // Integrated Navigation: Right
-        Item {
+        Rectangle {
             id: rightNavInternal
+            width: 36; height: 36; radius: 18
             anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: 80
+            anchors.rightMargin: 22
+            anchors.verticalCenter: parent.verticalCenter
             visible: sg.state === "expanded"
-            clip: true
-
-            Rectangle {
-                width: dash.width
-                height: dash.height
-                radius: dash.radius
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                color: rightNavMouse.containsMouse ? "#15000000" : "transparent"
-            }
+            color: rightNavMouse.containsMouse ? "#20000000" : "transparent"
+            Behavior on color { ColorAnimation { duration: 150 } }
 
             Text {
                 anchors.centerIn: parent
-                text: ">"
-                font.pixelSize: 24
-                color: "#66000000"
-                visible: rightNavMouse.containsMouse
+                text: "\u203a"
+                font.pixelSize: 22
+                color: rightNavMouse.containsMouse ? "#88000000" : "#44000000"
+                Behavior on color { ColorAnimation { duration: 150 } }
             }
 
             MouseArea {
@@ -243,6 +225,7 @@ PanelWindow {
 
             property var now: new Date()
             property string battery: "--%"
+            property bool isCharging: false
 
             state: "clock"
             states: [
@@ -252,7 +235,7 @@ PanelWindow {
                 },
                 State {
                     name: "battery"
-                    PropertyChanges { target: previewText; text: battery }
+                    PropertyChanges { target: previewText; text: (previewText.isCharging ? "\u26a1 " : "") + battery }
                 }
             ]
 
@@ -264,6 +247,7 @@ PanelWindow {
                     previewText.now = new Date()
                     if (previewText.state == "battery") {
                         batteryProc.running = true
+                        chargingProc.running = true
                     }
                 }
             }
@@ -275,6 +259,17 @@ PanelWindow {
                     onStreamFinished: {
                         const val = this.text.trim();
                         if (val.length > 0) previewText.battery = val + "%";
+                    }
+                }
+            }
+
+            Process {
+                id: chargingProc
+                command: ["cat", "/sys/class/power_supply/BAT1/status"]
+                stdout: StdioCollector {
+                    onStreamFinished: {
+                        const status = this.text.trim();
+                        previewText.isCharging = (status === "Charging" || status === "Full");
                     }
                 }
             }
@@ -295,6 +290,7 @@ PanelWindow {
                     previewText.state = (previewText.state == "clock") ? "battery" : "clock"
                     if (previewText.state == "battery") {
                         batteryProc.running = true
+                        chargingProc.running = true
                     }
                 }
             }
