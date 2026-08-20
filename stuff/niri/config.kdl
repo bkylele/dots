@@ -125,7 +125,7 @@ binds {
 
     Mod+T hotkey-overlay-title="Open a Terminal"            { spawn "kitty"; }
     Mod+B hotkey-overlay-title="Open a Browser"             { spawn "firefox"; }
-    Mod+P hotkey-overlay-title="Run an Application: rofi"   { spawn-sh "rofi -show run"; }
+    Mod+P hotkey-overlay-title="Run an Application"         { spawn-sh "qs ipc call runner toggle"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
