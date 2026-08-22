@@ -216,13 +216,14 @@ PanelWindow {
 
                     // Handle special keys
                     Keys.onPressed: function(event) {
-                        if (event.key === Qt.Key_Down) {
+                        var ctrl = event.modifiers & Qt.ControlModifier
+                        if (event.key === Qt.Key_Down || (ctrl && event.key === Qt.Key_N)) {
                             root.isNavigating = true
                             if (root.selectedIndex < root.filteredResults.length - 1) {
                                 root.selectedIndex++
                             }
                             event.accepted = true
-                        } else if (event.key === Qt.Key_Up) {
+                        } else if (event.key === Qt.Key_Up || (ctrl && event.key === Qt.Key_P)) {
                             root.isNavigating = true
                             if (root.selectedIndex > 0) {
                                 root.selectedIndex--
