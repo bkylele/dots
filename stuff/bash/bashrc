@@ -24,6 +24,7 @@ alias ll='ls -lvh'
 alias l='la'
 alias vi=$EDITOR
 alias py='python'
+alias bc=', bc --mathlib'
 alias cat='bat'
 alias htop='btop'
 alias open='xdg-open'
