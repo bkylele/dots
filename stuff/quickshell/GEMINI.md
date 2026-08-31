@@ -15,11 +15,13 @@ quickshell/
 ├── dashboard/                   # Everything inside the expanded dashboard circle
 │   ├── DashboardMenu.qml        # Data-driven tab container (Component list + Loader)
 │   └── tabs/                    # One file per tab
-│       ├── ClockCalendarTab.qml  # Tab 0: dot-clock + calendar
+│       ├── ClockCalendarTab.qml  # Tab 0: weather + dot-clock + quick-actions + calendar
 │       └── SystemStatusTab.qml  # Tab 1: CPU/Mem/Temp bars + uptime
 └── widgets/                     # Shared, reusable leaf components
     ├── Calendar.qml             # Sliding month calendar
     ├── DotClock.qml             # Stylized dot-ring clock
+    ├── WeatherWidget.qml        # Live weather (wttr.in) — temp, condition, location, icon
+    ├── QuickActions.qml         # Extensible grid of circular toggle buttons
     ├── CpuMonitor.qml           # CPU usage bar
     ├── MemoryMonitor.qml        # Memory usage bar
     └── TemperatureMonitor.qml   # Temperature bar with color thresholds
@@ -39,12 +41,14 @@ quickshell/
 - **Shared Clock**: A 1-second timer provides `now` to any tab that declares a `property var now`.
 
 ### 3. Dashboard Tabs (`dashboard/tabs/`)
-- **ClockCalendarTab**: Stylized dot-clock widget and a prominent calendar. Exposes `reset()` to return the calendar to the current month.
+- **ClockCalendarTab**: Composite dashboard with four sections: WeatherWidget (top), DotClock (middle-left), QuickActions (middle-right), and Calendar (bottom). Exposes `reset()` to return the calendar to the current month.
 - **SystemStatusTab**: System resource monitors (CPU, Memory, Temperature) and uptime. Self-contained with its own uptime process.
 - **Adding a Tab**: Create `dashboard/tabs/MyNewTab.qml` as an `Item`, then add `Component { MyNewTab {} }` to the `tabs` list in `DashboardMenu.qml`.
 
 ### 4. Widgets (`widgets/`)
 - **DotClock**: Accepts a `now` property — the parent controls the timer. Renders hour/minute text surrounded by 60 animated dot indicators for seconds.
+- **WeatherWidget**: Fetches weather from `wttr.in` (Fahrenheit, US units). Displays temperature, sky condition, location, and a mapped Unicode icon. Auto-refreshes every 10 minutes.
+- **QuickActions**: Data-driven grid of circular toggle buttons. Accepts an `actions` list of `{icon, label, active}` objects and emits `actionToggled(index)`. To add a button, append to the `actions` list. Font auto-shrinks for multi-character labels.
 - **CpuMonitor, MemoryMonitor, TemperatureMonitor**: Minimalist vertical bars with a fixed **4px thickness**. Layout-agnostic (no `Layout.*` properties on root). Data sourced from `top`, `free`, and `/sys/class/thermal/thermal_zone0/temp` respectively.
 - **Calendar**: Stationary header (Month/Year and arrows) with a sliding `ListView` date grid. **250ms** move duration.
 

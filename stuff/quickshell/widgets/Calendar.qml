@@ -3,8 +3,8 @@ import QtQuick.Layouts
 
 Item {
     id: root
-    width: 320
-    height: 265
+    width: 360
+    height: 230
 
     property date currentMonth: new Date()
     property date today: new Date()
@@ -47,14 +47,14 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 40
+        height: 34
 
         Rectangle {
             id: prevButton
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            width: 32; height: 32
-            radius: 16
+            width: 28; height: 28
+            radius: 14
             color: prevMouse.containsMouse ? "#EEEEEE" : "transparent"
             Text { anchors.centerIn: parent; text: "<"; font.pixelSize: 18 }
             MouseArea {
@@ -94,8 +94,8 @@ Item {
             id: nextButton
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            width: 32; height: 32
-            radius: 16
+            width: 28; height: 28
+            radius: 14
             color: nextMouse.containsMouse ? "#EEEEEE" : "transparent"
             Text { anchors.centerIn: parent; text: ">"; font.pixelSize: 18 }
             MouseArea {
@@ -116,7 +116,7 @@ Item {
         Repeater {
             model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
             delegate: Item {
-                width: 40; height: 28
+                width: 46; height: 24
                 Text {
                     text: modelData
                     font.bold: true
@@ -166,7 +166,7 @@ Item {
 
             GridLayout {
                 columns: 7
-                rowSpacing: 4
+                rowSpacing: 2
                 columnSpacing: 0
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
@@ -176,8 +176,8 @@ Item {
                 Repeater {
                     model: firstDayOfMonth
                     delegate: Rectangle {
-                        width: 40; height: 28
-                        radius: 14
+                        width: 46; height: 24
+                        radius: 12
                         color: "transparent"
                         Text {
                             color: "#BBBBBB"
@@ -191,8 +191,8 @@ Item {
                 Repeater {
                     model: daysInMonth
                     delegate: Rectangle {
-                        width: 40; height: 28
-                        radius: 14
+                        width: 46; height: 24
+                        radius: 12
                         color: {
                             var isToday = today.getDate() === (index + 1) &&
                                           today.getMonth() === monthDate.getMonth() &&
@@ -217,8 +217,8 @@ Item {
                 Repeater {
                     model: 6 - lastDayOfMonth
                     delegate: Rectangle {
-                        width: 40; height: 28
-                        radius: 14
+                        width: 46; height: 24
+                        radius: 12
                         color: "transparent"
                         Text {
                             color: "#BBBBBB"

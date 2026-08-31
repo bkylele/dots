@@ -276,7 +276,9 @@ PanelWindow {
         opacity: 0
         visible: opacity > 0
         color: navNWMouse.containsMouse ? "#20000000" : "transparent"
+        scale: navNWMouse.containsMouse ? 1.3 : 1.0
         Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
         Text {
             anchors.centerIn: parent
@@ -303,7 +305,9 @@ PanelWindow {
         opacity: 0
         visible: opacity > 0
         color: navNEMouse.containsMouse ? "#20000000" : "transparent"
+        scale: navNEMouse.containsMouse ? 1.3 : 1.0
         Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
         Text {
             anchors.centerIn: parent
