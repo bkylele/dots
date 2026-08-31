@@ -6,13 +6,18 @@ Item {
     anchors.fill: parent
 
     // --- Tab Registry ---
-    // To add a new tab, just append a Component here.
+    // To add a new tab, append a Component here AND a corresponding icon to tabIcons.
     property list<Component> tabs: [
         Component { ClockCalendarTab {} },
         Component { SystemStatusTab {} }
     ]
+    property var tabIcons: ["\u23F0", "\uD83D\uDCBB"]
     property int tabCount: tabs.length
     property int currentTabIndex: 0
+
+    // Icons representing the tab you'd navigate TO
+    property string prevTabIcon: tabIcons[(currentTabIndex - 1 + tabCount) % tabCount]
+    property string nextTabIcon: tabIcons[(currentTabIndex + 1) % tabCount]
 
     property var now: new Date()
 

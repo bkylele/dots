@@ -30,7 +30,7 @@ quickshell/
 ### 1. Top Panel (`panels/TopPanel.qml`)
 - **Dual Mode**: Features a "top-pill" preview (clock/battery) that drops down on hover and a "blow-up" circular dashboard (650x650) triggered by a right-click.
 - **Sequential Animations**: Critical for visual polish. Content must fade out (`opacity: 0`) *before* the panel moves or resizes to prevent text from "floating" outside the window boundaries.
-- **Integrated Navigation**: The far left and right edges (80px) of the expanded circle act as invisible buttons for cycling through tabs. They show a subtle grey overlay (`#15000000`) and arrows only on hover.
+- **External Navigation Icons**: When expanded, two small grey icon buttons appear outside the circle at the NW (top-left, 45°) and NE (top-right, 45°) positions. They show the icon of the tab you'd navigate to (e.g., ⏰ for ClockCalendar, 💻 for SystemStatus). NW = previous tab, NE = next tab. Icons subtly brighten on hover.
 - **Focus & Interaction**: The window uses the `focusable` property to capture the **Escape** key to hide. Clicks outside the central circle are caught by a full-screen `backgroundDim` to close the dashboard.
 
 ### 2. Dashboard Menu (`dashboard/DashboardMenu.qml`)

@@ -53,6 +53,8 @@ PanelWindow {
                 PropertyChanges { target: backgroundDim; opacity: 0 }
                 PropertyChanges { target: expandedContent; opacity: 0; scale: 0.8 }
                 PropertyChanges { target: previewText; opacity: 0 }
+                PropertyChanges { target: navNW; opacity: 0 }
+                PropertyChanges { target: navNE; opacity: 0 }
             },
             State {
                 name: "preview"
@@ -60,6 +62,8 @@ PanelWindow {
                 PropertyChanges { target: backgroundDim; opacity: 0 }
                 PropertyChanges { target: expandedContent; opacity: 0; scale: 0.8 }
                 PropertyChanges { target: previewText; opacity: 1 }
+                PropertyChanges { target: navNW; opacity: 0 }
+                PropertyChanges { target: navNE; opacity: 0 }
             },
             State {
                 name: "expanded"
@@ -67,6 +71,8 @@ PanelWindow {
                 PropertyChanges { target: backgroundDim; opacity: 0.4 }
                 PropertyChanges { target: expandedContent; opacity: 1; scale: 1.0 }
                 PropertyChanges { target: previewText; opacity: 0 }
+                PropertyChanges { target: navNW; opacity: 1 }
+                PropertyChanges { target: navNE; opacity: 1 }
             }
         ]
 
@@ -81,15 +87,23 @@ PanelWindow {
                         ColorAnimation { target: dash; duration: 400 }
                         NumberAnimation { target: previewText; property: "opacity"; to: 0; duration: 40 }
                     }
-                    NumberAnimation { target: expandedContent; property: "opacity"; duration: 250 }
+                    ParallelAnimation {
+                        NumberAnimation { target: expandedContent; property: "opacity"; duration: 250 }
+                        NumberAnimation { target: navNW; property: "opacity"; duration: 250 }
+                        NumberAnimation { target: navNE; property: "opacity"; duration: 250 }
+                    }
                 }
             },
             // Hide/Collapse from Expanded
             Transition {
                 from: "expanded"; to: "*"
                 SequentialAnimation {
-                    // 1. Hide expanded content first
-                    NumberAnimation { target: expandedContent; property: "opacity"; to: 0; duration: 150 }
+                    // 1. Hide expanded content and nav icons first
+                    ParallelAnimation {
+                        NumberAnimation { target: expandedContent; property: "opacity"; to: 0; duration: 150 }
+                        NumberAnimation { target: navNW; property: "opacity"; to: 0; duration: 150 }
+                        NumberAnimation { target: navNE; property: "opacity"; to: 0; duration: 150 }
+                    }
                     // 2. Move and resize panel
                     ParallelAnimation {
                         NumberAnimation { target: dash; properties: "y,width,height,radius"; duration: 300; easing.type: Easing.OutCubic }
@@ -162,59 +176,6 @@ PanelWindow {
             Behavior on scale { NumberAnimation { duration: 500; easing.type: Easing.OutBack } }
         }
 
-        // Integrated Navigation: Left
-        Rectangle {
-            id: leftNavInternal
-            width: 36; height: 36; radius: 18
-            anchors.left: parent.left
-            anchors.leftMargin: 22
-            anchors.verticalCenter: parent.verticalCenter
-            visible: sg.state === "expanded"
-            color: leftNavMouse.containsMouse ? "#20000000" : "transparent"
-            Behavior on color { ColorAnimation { duration: 150 } }
-
-            Text {
-                anchors.centerIn: parent
-                text: "\u2039"
-                font.pixelSize: 22
-                color: leftNavMouse.containsMouse ? "#88000000" : "#44000000"
-                Behavior on color { ColorAnimation { duration: 150 } }
-            }
-
-            MouseArea {
-                id: leftNavMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: function(mouse) { expandedContent.prevTab() }
-            }
-        }
-
-        // Integrated Navigation: Right
-        Rectangle {
-            id: rightNavInternal
-            width: 36; height: 36; radius: 18
-            anchors.right: parent.right
-            anchors.rightMargin: 22
-            anchors.verticalCenter: parent.verticalCenter
-            visible: sg.state === "expanded"
-            color: rightNavMouse.containsMouse ? "#20000000" : "transparent"
-            Behavior on color { ColorAnimation { duration: 150 } }
-
-            Text {
-                anchors.centerIn: parent
-                text: "\u203a"
-                font.pixelSize: 22
-                color: rightNavMouse.containsMouse ? "#88000000" : "#44000000"
-                Behavior on color { ColorAnimation { duration: 150 } }
-            }
-
-            MouseArea {
-                id: rightNavMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: function(mouse) { expandedContent.nextTab() }
-            }
-        }
 
         // Content for preview mode
         Text {
@@ -294,6 +255,69 @@ PanelWindow {
                     }
                 }
             }
+        }
+    }
+
+    // --- External Navigation Icons (NW and NE, outside the circle) ---
+    // Geometry: circle center is (dash.x + dash.width/2, dash.y + dash.height/2)
+    // Place icons at 45° outside the circle edge with a small gap.
+    property real _circCX: dash.x + dash.width / 2
+    property real _circCY: dash.y + dash.height / 2
+    property real _circR: dash.width / 2
+    // cos(45°) = sin(45°) ≈ 0.7071
+    property real _navOffset: (_circR + 28) * 0.7071
+
+    // NW icon (previous tab)
+    Rectangle {
+        id: navNW
+        width: 40; height: 40; radius: 20
+        x: _circCX - _navOffset - width / 2
+        y: _circCY - _navOffset - height / 2
+        opacity: 0
+        visible: opacity > 0
+        color: navNWMouse.containsMouse ? "#20000000" : "transparent"
+        Behavior on color { ColorAnimation { duration: 150 } }
+
+        Text {
+            anchors.centerIn: parent
+            text: expandedContent.prevTabIcon
+            font.pixelSize: 18
+            opacity: navNWMouse.containsMouse ? 0.7 : 0.4
+            Behavior on opacity { NumberAnimation { duration: 150 } }
+        }
+
+        MouseArea {
+            id: navNWMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: function(mouse) { expandedContent.prevTab() }
+        }
+    }
+
+    // NE icon (next tab)
+    Rectangle {
+        id: navNE
+        width: 40; height: 40; radius: 20
+        x: _circCX + _navOffset - width / 2
+        y: _circCY - _navOffset - height / 2
+        opacity: 0
+        visible: opacity > 0
+        color: navNEMouse.containsMouse ? "#20000000" : "transparent"
+        Behavior on color { ColorAnimation { duration: 150 } }
+
+        Text {
+            anchors.centerIn: parent
+            text: expandedContent.nextTabIcon
+            font.pixelSize: 18
+            opacity: navNEMouse.containsMouse ? 0.7 : 0.4
+            Behavior on opacity { NumberAnimation { duration: 150 } }
+        }
+
+        MouseArea {
+            id: navNEMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: function(mouse) { expandedContent.nextTab() }
         }
     }
 
