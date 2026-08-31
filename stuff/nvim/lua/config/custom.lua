@@ -12,7 +12,7 @@ vim.g.filetype_pl = 'prolog'
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "nix",
   callback = function()
-    vim.bo.formatprg = ", nixfmt"
+    vim.bo.formatprg = ", nixfmt - "
   end,
 })
 

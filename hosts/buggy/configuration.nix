@@ -61,25 +61,25 @@
 
   networking.firewall.allowedUDPPorts = [ 51820 ];
 
-  networking.wg-quick.interfaces.wg0 = {
-    autostart = false;
-    address = [ "10.0.0.3/24" ];
-    dns = [ "10.0.0.1" ]; # Use AdGuard Home on wapol
-    privateKeyFile = "/etc/wireguard/private.key";
-
-    peers = [
-      {
-        # wapol (Server)
-        publicKey = "YwDqFM0LRzBorhFpYOrdCCNN/vgpgN36K/4vo4ObjWY=";
-        allowedIPs = [
-          "10.0.0.0/24"
-          "::/0"
-        ]; # Split tunnel
-        endpoint = "68.5.73.23:51820";
-        persistentKeepalive = 25;
-      }
-    ];
-  };
+  # networking.wg-quick.interfaces.wg0 = {
+  #   autostart = false;
+  #   address = [ "10.0.0.3/24" ];
+  #   dns = [ "10.0.0.1" ]; # Use AdGuard Home on wapol
+  #   privateKeyFile = "/etc/wireguard/private.key";
+  #
+  #   peers = [
+  #     {
+  #       # wapol (Server)
+  #       publicKey = "YwDqFM0LRzBorhFpYOrdCCNN/vgpgN36K/4vo4ObjWY=";
+  #       allowedIPs = [
+  #         "10.0.0.0/24"
+  #         "::/0"
+  #       ]; # Split tunnel
+  #       endpoint = "68.5.73.23:51820";
+  #       persistentKeepalive = 25;
+  #     }
+  #   ];
+  # };
 
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "America/Denver";
@@ -156,7 +156,6 @@
 
   # System Profile
   environment.systemPackages = with pkgs; [
-    wireguard-tools
     htop
     zoxide
     fzf
@@ -164,9 +163,12 @@
     fd
     bat
     btop
+    antigravity
+    claude-code
     xdg-user-dirs
     libnotify
     brightnessctl
+    wluma
     wl-clipboard
     wf-recorder
     slurp
@@ -177,11 +179,11 @@
     imv
     rofi
     vesktop
+    xournalpp
     catppuccin-cursors.mochaDark
     xwayland-satellite
     scrcpy
     android-tools
-    rquickshare
     iio-niri
     bash-custom
     neovim-custom

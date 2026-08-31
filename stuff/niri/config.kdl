@@ -36,6 +36,10 @@ output "eDP-1" {
     position x=-1280 y=0
 }
 
+// output "DP-1" {
+//     mode "2560x1440@59.951"
+// }
+
 // ====== https://niri-wm.github.io/niri/Configuration:-Layout ======
 layout {
     gaps 16
@@ -126,6 +130,7 @@ binds {
     Mod+T hotkey-overlay-title="Open a Terminal"            { spawn "kitty"; }
     Mod+B hotkey-overlay-title="Open a Browser"             { spawn "firefox"; }
     Mod+P hotkey-overlay-title="Run an Application"         { spawn-sh "qs ipc call runner toggle"; }
+
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
@@ -278,9 +283,11 @@ binds {
 // Startup apps
 spawn-at-startup "hyprlock"
 spawn-at-startup "swayidle"
-spawn-at-startup "~/.config/niri/battery_notif.sh"
+// spawn-at-startup "~/.config/niri/battery_notif.sh"
 spawn-at-startup "quickshell"
-spawn-at-startup "iio-niri"
+// spawn-at-startup "iio-niri" "listen"
+spawn-at-startup "sh" "-c" "while true; do iio-niri listen; sleep 2; done";
+spawn-at-startup "wluma"
 
 
 hotkey-overlay {
