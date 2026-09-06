@@ -29,7 +29,7 @@ vim.keymap.set('n', '<c-u>'     , '<c-u>zz'                                     
 vim.keymap.set('n', 'gyy'       , 'yygcc'                  , { remap = true }                                 )
 vim.keymap.set('v', 'gy'        , 'ygvgc'                  , { remap = true }                                 )
 
-vim.keymap.set('n', '<leader>pf', ':find<space>**/'        , { desc = 'Find file' }                           )
-vim.keymap.set('n', '<leader>ps', ':grep<space>'           , { desc = 'Grep' }                                )
+vim.keymap.set('n', '<leader>pf', ':find<space>**/*'       , { desc = 'Find file' }                           )
+vim.keymap.set('n', '<leader>ps', ':grep<space>""<left>'   , { desc = 'Grep' }                                )
 vim.keymap.set('v', '<leader>s' , ':s/'                    , { desc = 'Start substitue on current selection' })
 vim.keymap.set('v', '<leader>n' , ':norm<space>'           , { desc = 'Start norm on current selection' }     )

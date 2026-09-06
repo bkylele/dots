@@ -61,26 +61,6 @@
 
   networking.firewall.allowedUDPPorts = [ 51820 ];
 
-  # networking.wg-quick.interfaces.wg0 = {
-  #   autostart = false;
-  #   address = [ "10.0.0.3/24" ];
-  #   dns = [ "10.0.0.1" ]; # Use AdGuard Home on wapol
-  #   privateKeyFile = "/etc/wireguard/private.key";
-  #
-  #   peers = [
-  #     {
-  #       # wapol (Server)
-  #       publicKey = "YwDqFM0LRzBorhFpYOrdCCNN/vgpgN36K/4vo4ObjWY=";
-  #       allowedIPs = [
-  #         "10.0.0.0/24"
-  #         "::/0"
-  #       ]; # Split tunnel
-  #       endpoint = "68.5.73.23:51820";
-  #       persistentKeepalive = 25;
-  #     }
-  #   ];
-  # };
-
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "America/Denver";
 
@@ -144,6 +124,8 @@
   };
   services.gnome.gnome-keyring.enable = true;
   services.tailscale.enable = true;
+  # Lets brian run `tailscale up/down` without root, so the dashboard VPN toggle works.
+  services.tailscale.extraSetFlags = [ "--operator=brian" ];
 
   # User Profiles
   users.users.brian = {
@@ -163,7 +145,7 @@
     fd
     bat
     btop
-    antigravity
+    antigravity-ide
     claude-code
     xdg-user-dirs
     libnotify
@@ -179,7 +161,9 @@
     imv
     rofi
     vesktop
+    slack
     xournalpp
+    inputs.glide.packages.${pkgs.stdenv.hostPlatform.system}.default
     catppuccin-cursors.mochaDark
     xwayland-satellite
     scrcpy

@@ -34,20 +34,39 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
   end,
 })
 
+vim.api.nvim_create_autocmd({ "FileType" }, {
+    pattern = "markdown",
+    callback = function()
+        -- Enable spell checking
+        vim.opt_local.spell = true
+        vim.opt_local.spelllang = "en_us"
+
+        -- Word wrapping and formatting
+        vim.opt_local.wrap = true
+        vim.opt_local.linebreak = true     -- Break lines at words, not in the middle of characters
+        vim.opt_local.breakindent = true   -- Wrapped lines retain the indentation of the first line
+
+        -- Visuals and UI
+        vim.opt_local.conceallevel = 2     -- Hides markdown syntax markers (like ** or _) for cleaner reading
+        vim.opt_local.colorcolumn = "0"    -- Disables the color column margin line if you have one globally set
+        vim.opt_local.signcolumn = "yes"   -- Keeps the left margin open to prevent text shifting
+    end,
+    group = vim.api.nvim_create_augroup("MarkdownSettings", { clear = true }),
+})
 
 -- vim.api.nvim_create_user_command('Git', function(opts)
---   local filetype = vim.bo.filetype
---   local bufname = vim.fn.bufname('%')
---
---   if filetype == 'fugitive' and bufname:match('^fugitive://') then
---     vim.cmd('bd!')
---   end
---
---   local args = opts.args or ''
---   if args == '' then
---     vim.cmd('Git')
---   else
---     args = args:gsub("'", "\\'")
---     vim.cmd("Git " .. args)
---   end
--- end, { nargs = '*', complete = 'shellcmd' })
+    --   local filetype = vim.bo.filetype
+    --   local bufname = vim.fn.bufname('%')
+    --
+    --   if filetype == 'fugitive' and bufname:match('^fugitive://') then
+    --     vim.cmd('bd!')
+    --   end
+    --
+    --   local args = opts.args or ''
+    --   if args == '' then
+    --     vim.cmd('Git')
+    --   else
+    --     args = args:gsub("'", "\\'")
+    --     vim.cmd("Git " .. args)
+    --   end
+    -- end, { nargs = '*', complete = 'shellcmd' })

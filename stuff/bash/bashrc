@@ -32,8 +32,8 @@ alias vit='vi -c "Git log | only | vert Git"'
 alias vid='vi .'
 alias kssh='kitten +kitten ssh'
 alias nixconf='cd ~/dots/ && vi ~/dots/hosts/buggy/configuration.nix && cd -'
-alias nixsw='nh os switch ~/dots/#buggy'
-alias nixservsw='nh os switch ~/dots/#wapol --target-host brian@wapol'
+alias nixsw='nh os switch ~/dots/#buggy -j7'
+alias nixservsw='nh os switch ~/dots/#wapol --target-host brian@wapol -j7'
 
 eval "$(fzf --bash)"
 eval "$(zoxide init bash)"

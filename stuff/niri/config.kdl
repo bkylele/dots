@@ -36,9 +36,9 @@ output "eDP-1" {
     position x=-1280 y=0
 }
 
-// output "DP-1" {
-//     mode "2560x1440@59.951"
-// }
+output "DP-2" {
+    mode "2560x1440@59.951"
+}
 
 // ====== https://niri-wm.github.io/niri/Configuration:-Layout ======
 layout {
@@ -129,6 +129,7 @@ binds {
 
     Mod+T hotkey-overlay-title="Open a Terminal"            { spawn "kitty"; }
     Mod+B hotkey-overlay-title="Open a Browser"             { spawn "firefox"; }
+    // Mod+B hotkey-overlay-title="Open a Browser"             { spawn "glide"; }
     Mod+P hotkey-overlay-title="Run an Application"         { spawn-sh "qs ipc call runner toggle"; }
 
 
