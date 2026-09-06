@@ -15,6 +15,9 @@ quickshell/
 ├── runner/                      # Mod+P application runner
 │   ├── AppRunner.qml            # Per-screen runner window (input + suggestions)
 │   └── RunnerState.qml          # Singleton: which screen the runner is shown on
+├── services/                    # Singletons holding shared, cross-screen state
+│   ├── QuickActionsState.qml    # Expanded panel index + wifi connect state machine
+│   └── Tailscale.qml            # Tailscale status polling, peers, up/down
 ├── dashboard/                   # Everything inside the expanded dashboard circle
 │   ├── DashboardMenu.qml        # Data-driven tab container (Component list + Loader)
 │   └── tabs/                    # One file per tab
@@ -51,7 +54,9 @@ quickshell/
 ### 4. Widgets (`widgets/`)
 - **DotClock**: Accepts a `now` property — the parent controls the timer. Renders hour/minute text surrounded by 60 animated dot indicators for seconds.
 - **WeatherWidget**: Fetches weather from `wttr.in` (Fahrenheit, US units). Displays temperature, sky condition, location, and a mapped Unicode icon. Auto-refreshes every 10 minutes.
-- **QuickActions**: Data-driven grid of circular toggle buttons. Accepts an `actions` list of `{icon, label, active}` objects and emits `actionToggled(index)`. To add a button, append to the `actions` list. Font auto-shrinks for multi-character labels.
+- **QuickActions**: Row of circular toggle buttons (Wi-Fi, Bluetooth, VPN). **Left-click** emits `actionToggled(index)`; **right-click** emits `actionExpanded(index)` to open that action's panel. The `actions` list (`{icon, label}`) is **static and must never be rebuilt** — it backs a `Repeater`, so a new array destroys every delegate and kills the hover/color animations. Live state goes in the parallel `activeStates` / `enabledStates` / `busyStates` arrays instead. The widget is self-sizing via `implicitWidth/Height`; do not also set `Layout.preferred*` on it.
+- **QuickActionPanel**: The expanding panel chrome — header (back button, title, subtitle, optional refresh), separator, and a `Loader` body. It is a `ClippingRectangle` (not `Rectangle` + `clip`) so list rows clip to the rounded corners. It does **not** own its geometry animation: `ClockCalendarTab` drives `x/y/width/height` and `contentOpacity`, because the same sequence also fades the rest of the dashboard.
+- **WifiList / BluetoothList / TailscaleList**: Panel bodies. Wi-Fi and Bluetooth use the native `Quickshell.Networking` / `Quickshell.Bluetooth` bindings (reactive, no polling); Tailscale has no native module and polls the CLI via `services/Tailscale.qml`.
 - **CpuMonitor, MemoryMonitor, TemperatureMonitor**: Minimalist vertical bars with a fixed **4px thickness**. Layout-agnostic (no `Layout.*` properties on root). Data sourced from `top`, `free`, and `/sys/class/thermal/thermal_zone0/temp` respectively.
 - **Calendar**: Stationary header (Month/Year and arrows) with a sliding `ListView` date grid. **250ms** move duration.
 
@@ -62,7 +67,16 @@ quickshell/
 - **Keys**: `Ctrl+N`/`Ctrl+P` (and Up/Down) move through the list — the first press selects the top entry, `Ctrl+P` past the top drops back to the typed text. **Enter runs the highlighted entry while navigating, otherwise the typed text.** A row is only highlighted when it is what Enter would run. `Tab` fills the input with the current suggestion; Escape dismisses. Clicking a suggestion runs it immediately.
 - **History**: `$XDG_DATA_HOME/quickshell/runner_history`, deduped, capped at `maxHistoryEntries`.
 
-### 6. Panel Stubs (`panels/Bottom|Left|Right`)
+### 6. Quick Actions (`widgets/QuickActions*`, `services/`)
+- **Gestures**: left-click toggles the real radio (Wi-Fi via `Networking.wifiEnabled`, Bluetooth via `Bluetooth.defaultAdapter.enabled`, VPN via `tailscale up/down`); right-click expands that button into a full panel. Right-click-to-expand matches the gesture that opens the dashboard itself.
+- **Shared state**: `services/QuickActionsState.qml` holds `expandedIndex` and the wifi connect machine. `TopPanel` is per-screen (`Variants`), so without a singleton each monitor would get its own panel state, its own Tailscale poller, and — worse — would race on the shared writable `WifiDevice.scannerEnabled`. One writer, keyed off `expandedIndex`.
+- **The blow-up**: the panel is an overlay in `ClockCalendarTab`, *not* a resize of the card (which would fight the layout and collide with the Calendar). It starts at the card's rect — computed imperatively with `mapToItem`, which registers no binding dependencies — and grows to 440×440 centered. Easing is **`OutCubic`, never `OutBack`**: the 530×530 tab box already has corners outside the 650 circle, and overshoot would push the panel's corners out too.
+- **Dismiss**: back button, or a click outside the panel (a `MouseArea` with `anchors.margins: -60` so it reaches the full circle, past the tab box). Escape still closes the whole dashboard. `DashboardMenu` refuses to switch tabs while `tabLoader.item.modal` is true, since that would destroy the open panel.
+- **Wi-Fi passwords**: `connect()` is always tried first; a password field only opens if NetworkManager answers `connectionFailed(NoSecrets)`, and the passphrase goes through the native `connectWithPsk()`. **Never shell out to `nmcli … password …`** — that puts the passphrase in `/proc/*/cmdline`. Only `WpaPsk`/`Wpa2Psk`/`Sae` can take a PSK; enterprise networks say so instead.
+- **Enum ordering is not what the docs imply** — verified on this build: `BluetoothDeviceState` is `Disconnected=0, Connected=1, Disconnecting=2, Connecting=3`, and `WifiSecurityType` is `Sae=1, Wpa2Eap=2, Wpa2Psk=3, WpaEap=4, WpaPsk=5, Owe=9, Open=10`. Always compare symbolically.
+- **Tailscale** needs `services.tailscale.extraSetFlags = [ "--operator=brian" ];` (in `hosts/buggy/configuration.nix`) for `up`/`down` to work unprivileged; reads work regardless.
+
+### 7. Panel Stubs (`panels/Bottom|Left|Right`)
 - Invisible (`visible: false`) PanelWindows anchored to their respective edges. Ready to be implemented with their own content and hover triggers.
 
 ## Engineering Standards

@@ -37,13 +37,19 @@ Item {
         }
     }
 
+    // A tab that has something expanded (e.g. a quick-action panel) blocks tab
+    // switching — the Loader would destroy it mid-flight and it'd vanish.
+    readonly property bool tabIsModal: tabLoader.item && tabLoader.item.modal === true
+
     // Quick Fade Out -> Fade In logic
     function nextTab() {
+        if (tabIsModal) return;
         tabSwitcher.newIndex = (currentTabIndex + 1) % tabCount;
         tabSwitcher.start();
     }
 
     function prevTab() {
+        if (tabIsModal) return;
         tabSwitcher.newIndex = (currentTabIndex - 1 + tabCount) % tabCount;
         tabSwitcher.start();
     }
