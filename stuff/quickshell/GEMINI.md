@@ -12,6 +12,9 @@ quickshell/
 │   ├── BottomPanel.qml          # Stub (visible: false)
 │   ├── LeftPanel.qml            # Stub (visible: false)
 │   └── RightPanel.qml           # Stub (visible: false)
+├── runner/                      # Mod+P application runner
+│   ├── AppRunner.qml            # Per-screen runner window (input + suggestions)
+│   └── RunnerState.qml          # Singleton: which screen the runner is shown on
 ├── dashboard/                   # Everything inside the expanded dashboard circle
 │   ├── DashboardMenu.qml        # Data-driven tab container (Component list + Loader)
 │   └── tabs/                    # One file per tab
@@ -52,7 +55,14 @@ quickshell/
 - **CpuMonitor, MemoryMonitor, TemperatureMonitor**: Minimalist vertical bars with a fixed **4px thickness**. Layout-agnostic (no `Layout.*` properties on root). Data sourced from `top`, `free`, and `/sys/class/thermal/thermal_zone0/temp` respectively.
 - **Calendar**: Stationary header (Month/Year and arrows) with a sliding `ListView` date grid. **250ms** move duration.
 
-### 5. Panel Stubs (`panels/Bottom|Left|Right`)
+### 5. App Runner (`runner/`)
+- **Invocation**: `qs ipc call runner toggle` (bound to `Mod+P` in niri). `runner hide` also exists.
+- **Single Monitor**: An `AppRunner` window exists on every screen, but `RunnerState` (a `Singleton`) holds the name of the one screen it is shown on; each instance binds `shown: RunnerState.activeScreen === modelData.name`. The target screen comes from `niri msg -j focused-output`, falling back to `Quickshell.screens[0]`. Because state is shared, Escape / click-outside / running a command dismisses the runner everywhere.
+- **Suggestions**: History matches (full command, including args) first, then `$PATH` commands (first word only), capped at `maxVisibleResults`.
+- **Keys**: `Ctrl+N`/`Ctrl+P` (and Up/Down) move through the list — the first press selects the top entry, `Ctrl+P` past the top drops back to the typed text. **Enter runs the highlighted entry while navigating, otherwise the typed text.** A row is only highlighted when it is what Enter would run. `Tab` fills the input with the current suggestion; Escape dismisses. Clicking a suggestion runs it immediately.
+- **History**: `$XDG_DATA_HOME/quickshell/runner_history`, deduped, capped at `maxHistoryEntries`.
+
+### 6. Panel Stubs (`panels/Bottom|Left|Right`)
 - Invisible (`visible: false`) PanelWindows anchored to their respective edges. Ready to be implemented with their own content and hover triggers.
 
 ## Engineering Standards

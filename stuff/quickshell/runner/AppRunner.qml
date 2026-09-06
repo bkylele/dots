@@ -37,19 +37,12 @@ PanelWindow {
     property bool pathLoaded: false         // Whether PATH commands have been loaded
     property bool isNavigating: false       // Whether user is arrow-key navigating
 
-    // Keyboard focus: Exclusive when visible, None when hidden
-    WlrLayershell.keyboardFocus: sg.state === "visible" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    // Only the instance on RunnerState's active screen shows itself, so the
+    // runner lives on one monitor at a time and dismissing it is global.
+    readonly property bool shown: RunnerState.activeScreen === modelData.name
 
-    // --- Toggle: called from IPC handler in shell.qml ---
-    function toggle() {
-        if (sg.state === "hidden") {
-            show()
-        } else {
-            hide()
-        }
-    }
-
-    function show() {
+    onShownChanged: {
+        if (!shown) return
         // Reset input state before showing
         inputField.text = ""
         root.selectedIndex = 0
@@ -62,10 +55,12 @@ PanelWindow {
         if (!pathLoaded) {
             pathLoadProc.running = true
         }
-        sg.state = "visible"
         // Delay focus grab to after the transition starts and keyboard focus is active
         focusTimer.restart()
     }
+
+    // Keyboard focus: Exclusive when visible, None when hidden
+    WlrLayershell.keyboardFocus: sg.state === "visible" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
     Timer {
         id: focusTimer
@@ -74,10 +69,6 @@ PanelWindow {
         onTriggered: {
             inputField.forceActiveFocus()
         }
-    }
-
-    function hide() {
-        sg.state = "hidden"
     }
 
     // --- Masking: capture input over the runner + dismiss area when visible ---
@@ -94,7 +85,7 @@ PanelWindow {
     // --- States & Transitions ---
     StateGroup {
         id: sg
-        state: "hidden"
+        state: root.shown ? "visible" : "hidden"
         states: [
             State {
                 name: "hidden"
@@ -132,7 +123,7 @@ PanelWindow {
     Shortcut {
         enabled: sg.state === "visible"
         sequence: "Escape"
-        onActivated: function() { root.hide() }
+        onActivated: function() { RunnerState.hide() }
     }
 
     // --- Click outside to dismiss ---
@@ -140,7 +131,7 @@ PanelWindow {
         id: dismissArea
         anchors.fill: parent
         visible: sg.state === "visible"
-        onClicked: function(mouse) { root.hide() }
+        onClicked: function(mouse) { RunnerState.hide() }
     }
 
     // --- The Runner Panel ---
@@ -218,15 +209,27 @@ PanelWindow {
                     Keys.onPressed: function(event) {
                         var ctrl = event.modifiers & Qt.ControlModifier
                         if (event.key === Qt.Key_Down || (ctrl && event.key === Qt.Key_N)) {
-                            root.isNavigating = true
-                            if (root.selectedIndex < root.filteredResults.length - 1) {
+                            if (!root.isNavigating) {
+                                // First press enters the list at the top
+                                if (root.filteredResults.length > 0) {
+                                    root.isNavigating = true
+                                    root.selectedIndex = 0
+                                }
+                            } else if (root.selectedIndex < root.filteredResults.length - 1) {
                                 root.selectedIndex++
                             }
                             event.accepted = true
                         } else if (event.key === Qt.Key_Up || (ctrl && event.key === Qt.Key_P)) {
-                            root.isNavigating = true
-                            if (root.selectedIndex > 0) {
+                            if (!root.isNavigating) {
+                                if (root.filteredResults.length > 0) {
+                                    root.isNavigating = true
+                                    root.selectedIndex = 0
+                                }
+                            } else if (root.selectedIndex > 0) {
                                 root.selectedIndex--
+                            } else {
+                                // Past the top: back to whatever was typed
+                                root.isNavigating = false
                             }
                             event.accepted = true
                         } else if (event.key === Qt.Key_Tab) {
@@ -237,7 +240,12 @@ PanelWindow {
                             }
                             event.accepted = true
                         } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            var cmd = inputField.text.trim()
+                            // While navigating with ctrl-n/p (or arrows), run the
+                            // highlighted suggestion; otherwise run what was typed.
+                            var cmd = root.selectedResult()
+                            if (cmd === "") {
+                                cmd = inputField.text.trim()
+                            }
                             if (cmd.length > 0) {
                                 root.executeCommand(cmd)
                             }
@@ -275,9 +283,12 @@ PanelWindow {
                 delegate: Rectangle {
                     required property int index
                     required property var modelData
+                    // Highlighted only while navigating — a highlighted row is
+                    // exactly what Enter will run.
+                    readonly property bool selected: root.isNavigating && index === root.selectedIndex
                     width: resultsList.width
                     height: root.resultRowHeight
-                    color: index === root.selectedIndex ? "#12000000" : (delegateMouse.containsMouse ? "#08000000" : "transparent")
+                    color: selected ? "#12000000" : (delegateMouse.containsMouse ? "#08000000" : "transparent")
 
                     Behavior on color { ColorAnimation { duration: 100 } }
 
@@ -286,7 +297,7 @@ PanelWindow {
                         anchors.left: parent.left
                         anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
-                        text: index === root.selectedIndex ? "▸" : " "
+                        text: selected ? "▸" : " "
                         font.pixelSize: 12
                         color: "#999999"
                     }
@@ -308,17 +319,25 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: function(mouse) {
-                            inputField.text = modelData
-                            inputField.cursorPosition = inputField.text.length
-                            inputField.forceActiveFocus()
+                            root.executeCommand(modelData)
                         }
                         onEntered: {
-                            root.selectedIndex = index
+                            // Don't let a resting cursor hijack what Enter runs
+                            if (root.isNavigating) {
+                                root.selectedIndex = index
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    // The suggestion Enter should run — empty unless the list is being navigated
+    function selectedResult() {
+        if (!isNavigating) return ""
+        if (selectedIndex < 0 || selectedIndex >= filteredResults.length) return ""
+        return filteredResults[selectedIndex]
     }
 
     // --- Result Filtering Logic ---
@@ -373,7 +392,7 @@ PanelWindow {
         execProc.command = ["setsid", "-f", "sh", "-c", cmd]
         execProc.running = true
         // Hide the runner
-        root.hide()
+        RunnerState.hide()
     }
 
     Process {

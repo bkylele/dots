@@ -8,18 +8,21 @@ import qs.runner
 ShellRoot {
     Scope {
         // --- App Runner IPC (singleton, not per-screen) ---
+        // RunnerState decides which screen the runner appears on; the per-screen
+        // AppRunner instances just follow it.
         IpcHandler {
             target: "runner"
 
-            function toggle() {
-                for (var i = 0; i < runnerVariants.instances.length; i++) {
-                    runnerVariants.instances[i].toggle()
-                }
+            function toggle(): void {
+                RunnerState.toggle()
+            }
+
+            function hide(): void {
+                RunnerState.hide()
             }
         }
 
         Variants {
-            id: runnerVariants
             model: Quickshell.screens;
             AppRunner { }
         }
