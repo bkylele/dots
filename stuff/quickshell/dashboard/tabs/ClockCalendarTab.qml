@@ -26,7 +26,7 @@ Item {
         // --- Middle row: Clock (left) + Quick Actions (right) ---
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: 16
+            spacing: 36
 
             DotClock {
                 Layout.preferredWidth: 160
