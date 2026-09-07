@@ -147,6 +147,9 @@
     btop
     antigravity-ide
     claude-code
+    codex
+    nodejs
+    pi-coding-agent
     xdg-user-dirs
     libnotify
     brightnessctl
