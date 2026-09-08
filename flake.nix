@@ -37,6 +37,7 @@
       templates = {
         default = {
           path = ./templates/default;
+          description = "useful flake template";
         };
       };
 

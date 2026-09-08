@@ -28,7 +28,7 @@ vim.o.termguicolors = true
 vim.o.conceallevel = 2
 vim.o.winborder = 'double'
 
-vim.cmd('colorscheme morning')
+vim.cmd('colorscheme habamax')
 
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.tohtml')
