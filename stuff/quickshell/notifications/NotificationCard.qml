@@ -9,6 +9,10 @@ Rectangle {
     required property var notification
     property int lowTimeout: 4000
     property int normalTimeout: 7000
+    property bool closing: false
+    property string closeOperation: ""
+    property var pendingAction: null
+    property string pendingReply: ""
 
     signal keyboardFocusRequested(var item)
     signal keyboardFocusReleased(var item)
@@ -49,9 +53,45 @@ Rectangle {
         return null
     }
 
-    function invokeDefault() {
+    function activate() {
         var action = defaultAction()
-        if (action) action.invoke()
+        beginClose(action ? "defaultAction" : "dismiss", action, "")
+    }
+
+    function invokeAction(action) {
+        if (!notification || closing) return
+        if (notification.resident) action.invoke()
+        else beginClose("action", action, "")
+    }
+
+    function sendReply(reply) {
+        if (!notification || closing || reply === "") return
+        if (notification.resident) notification.sendInlineReply(reply)
+        else beginClose("reply", null, reply)
+    }
+
+    function beginClose(operation, action, reply) {
+        if (!notification || closing) return
+        closeOperation = operation
+        pendingAction = action
+        pendingReply = reply
+        closing = true
+        expiry.stop()
+        dismissAnimation.restart()
+    }
+
+    function finishClose() {
+        var current = notification
+        if (!current) return
+
+        if (closeOperation === "expire") current.expire()
+        else if (closeOperation === "dismiss") current.dismiss()
+        else if (closeOperation === "reply") current.sendInlineReply(pendingReply)
+        else if (pendingAction) {
+            var wasResident = current.resident
+            pendingAction.invoke()
+            if (closeOperation === "defaultAction" && wasResident && current.tracked) current.dismiss()
+        }
     }
 
     function restartExpiry() {
@@ -68,20 +108,39 @@ Rectangle {
     Component.onCompleted: restartExpiry()
     Component.onDestruction: keyboardFocusReleased(replyInput)
 
+    // Keep the notification contents alive until ListView's remove transition ends.
+    RetainableLock {
+        object: card.notification
+        locked: true
+    }
+
     MouseArea {
         anchors.fill: parent
-        enabled: card.defaultAction() !== null
-        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-        onClicked: function() { card.invokeDefault() }
+        enabled: !card.closing
+        cursorShape: Qt.PointingHandCursor
+        onClicked: function() { card.activate() }
+    }
+
+    ParallelAnimation {
+        id: dismissAnimation
+
+        NumberAnimation {
+            target: card
+            property: "x"
+            from: 0
+            to: card.width + 24
+            duration: 240
+            easing.type: Easing.InCubic
+        }
+        NumberAnimation { target: card; property: "opacity"; to: 0; duration: 200 }
+        onFinished: function() { card.finishClose() }
     }
 
     Timer {
         id: expiry
         interval: Math.max(1, card.timeout)
         repeat: false
-        onTriggered: function() {
-            if (card.valid && card.notification.tracked) card.notification.expire()
-        }
+        onTriggered: function() { card.beginClose("expire", null, "") }
     }
 
     Connections {
@@ -137,8 +196,7 @@ Rectangle {
                 id: headerText
                 anchors.left: appIcon.right
                 anchors.leftMargin: 11
-                anchors.right: closeButton.left
-                anchors.rightMargin: 10
+                anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2
 
@@ -157,31 +215,6 @@ Rectangle {
                     font.pixelSize: 15
                     font.bold: true
                     wrapMode: Text.Wrap
-                }
-            }
-
-            Rectangle {
-                id: closeButton
-                anchors.top: parent.top
-                anchors.right: parent.right
-                width: 26
-                height: 26
-                radius: 13
-                color: closeMouse.containsMouse ? "#55FFFFFF" : "#22FFFFFF"
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "×"
-                    color: "white"
-                    font.pixelSize: 18
-                }
-
-                MouseArea {
-                    id: closeMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: function() { if (card.valid) card.notification.dismiss() }
                 }
             }
         }
@@ -271,7 +304,8 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: function() { actionButton.modelData.invoke() }
+                        enabled: !card.closing
+                        onClicked: function() { card.invokeAction(actionButton.modelData) }
                     }
                 }
             }
@@ -328,10 +362,11 @@ Rectangle {
                 color: sendMouse.containsMouse ? "#A8C7FA" : "#8AB4F8"
 
                 function send() {
-                    if (replyInput.text === "") return
-                    if (card.valid) card.notification.sendInlineReply(replyInput.text)
+                    var reply = replyInput.text
+                    if (reply === "") return
                     replyInput.text = ""
                     card.keyboardFocusReleased(replyInput)
+                    card.sendReply(reply)
                 }
 
                 Text {

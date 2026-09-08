@@ -68,6 +68,22 @@ PanelWindow {
         boundsBehavior: Flickable.StopAtBounds
         verticalLayoutDirection: root.atTop ? ListView.TopToBottom : ListView.BottomToTop
 
+        remove: Transition {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "x"
+                    to: popupList.width + root.edgeMargin
+                    duration: 240
+                    easing.type: Easing.InCubic
+                }
+                NumberAnimation { property: "opacity"; to: 0; duration: 200 }
+            }
+        }
+
+        removeDisplaced: Transition {
+            NumberAnimation { properties: "x,y"; duration: 240; easing.type: Easing.OutCubic }
+        }
+
         delegate: NotificationCard {
             required property var modelData
 
