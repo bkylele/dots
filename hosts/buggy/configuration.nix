@@ -104,7 +104,10 @@
   programs.nix-index-database.comma.enable = true;
   programs.direnv.enable = true;
   programs.firefox.enable = true;
-  programs.niri.enable = true;
+  programs.niri = {
+    enable = true;
+    package = pkgs.niri-custom;
+  };
   programs.steam.enable = true;
   programs.gamescope.enable = true;
   programs.fuse.userAllowOther = true;
@@ -159,7 +162,7 @@
     slurp
     nautilus
     kdePackages.dolphin
-    quickshell
+    quickshell-custom
     mpv
     imv
     rofi

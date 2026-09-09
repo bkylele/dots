@@ -8,6 +8,7 @@
       hyprlock-custom = prev.callPackage ./stuff/hyprlock/default.nix { };
       swayidle-custom = prev.callPackage ./stuff/swayidle/default.nix { };
       niri-custom = prev.callPackage ./stuff/niri/default.nix { };
+      quickshell-custom = prev.callPackage ./stuff/quickshell/default.nix { };
     })
   ];
 }
