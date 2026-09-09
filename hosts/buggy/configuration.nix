@@ -10,7 +10,7 @@
     ./hardware-configuration.nix
     ./hardware-extra.nix
   ];
-
+ 
   nix = {
     settings.experimental-features = [
       "nix-command"
@@ -85,7 +85,7 @@
     config = {
       user = {
         name = "Brian Le";
-        email = "contact@brianle.4wrd.cc";
+        email = "brian.k.le@proton.me";
       };
 
       pull.rebase = true;
