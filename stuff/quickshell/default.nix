@@ -7,6 +7,7 @@ symlinkJoin {
   name = "quickshell-custom";
   paths = [ quickshell ];
   nativeBuildInputs = [ makeWrapper ];
+  meta.mainProgram = "quickshell";
   postBuild = ''
     wrapProgram $out/bin/quickshell \
       --add-flags "--path ${./.}"

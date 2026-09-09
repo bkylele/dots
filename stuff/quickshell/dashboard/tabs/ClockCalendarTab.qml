@@ -41,7 +41,8 @@ Item {
             panel.width = r.width; panel.height = r.height;
             panel.contentOpacity = 0;
             expandAnim.start();
-        } else {
+        } else if (panel.width > 0) {
+            // Ignore the initial -1 binding before the panel has ever opened.
             expandAnim.stop();
             collapseAnim.start();
         }

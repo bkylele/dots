@@ -32,6 +32,7 @@
       packages.${system} = {
         neovim = pkgs.callPackage ./stuff/nvim/default.nix { };
         bash = pkgs.callPackage ./stuff/bash/default.nix { };
+        quickshell = pkgs.callPackage ./stuff/quickshell/default.nix { };
       };
 
       templates = {
