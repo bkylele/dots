@@ -49,3 +49,12 @@ require('oil').setup({
 })
 
 require('lean').setup({ mappings = true })
+
+vim.g.coqtail_noimap = 1
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "coq",
+  callback = function()
+      vim.keymap.set({'n', 'i'}, '<c-j>', '<cmd>RocqNext<cr>', { buffer = true })
+      vim.keymap.set({'n', 'i'}, '<c-k>', '<cmd>RocqUndo<cr>', { buffer = true })
+  end,
+})

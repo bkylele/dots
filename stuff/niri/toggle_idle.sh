@@ -1,7 +1,7 @@
-#! /usr/bin/env -S nix shell nixpkgs#bash nixpkgs#killall nixpkgs#libnotify --command bash
+#! /usr/bin/env -S nix shell nixpkgs#bash nixpkgs#libnotify --command bash
 
 if [ $(pidof swayidle) ]; then
-    killall swayidle
+    kill $(pidof swayidle)
     notify-send "Screen idle stopped" "Screen will be kept awake"
 else
     swayidle &

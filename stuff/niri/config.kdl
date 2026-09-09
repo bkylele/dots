@@ -284,7 +284,7 @@ binds {
 // Startup apps
 spawn-at-startup "hyprlock"
 spawn-at-startup "swayidle"
-// spawn-at-startup "~/.config/niri/battery_notif.sh"
+spawn-at-startup "~/.config/niri/battery_notif.sh"
 spawn-at-startup "quickshell"
 // spawn-at-startup "iio-niri" "listen"
 spawn-at-startup "sh" "-c" "while true; do iio-niri listen; sleep 2; done";

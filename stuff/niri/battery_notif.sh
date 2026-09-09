@@ -9,5 +9,5 @@ while true; do
             notify-send -u critical "🪫 Battery Low: $power" "Plug in laptop soon"
         fi
     fi
-    sleep 60
+    sleep 120
 done
