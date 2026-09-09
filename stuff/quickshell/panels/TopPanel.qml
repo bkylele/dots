@@ -284,8 +284,6 @@ PanelWindow {
             anchors.centerIn: parent
             text: expandedContent.prevTabIcon
             font.pixelSize: 18
-            opacity: navNWMouse.containsMouse ? 0.7 : 0.4
-            Behavior on opacity { NumberAnimation { duration: 150 } }
         }
 
         MouseArea {
@@ -313,8 +311,6 @@ PanelWindow {
             anchors.centerIn: parent
             text: expandedContent.nextTabIcon
             font.pixelSize: 18
-            opacity: navNEMouse.containsMouse ? 0.7 : 0.4
-            Behavior on opacity { NumberAnimation { duration: 150 } }
         }
 
         MouseArea {

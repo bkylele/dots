@@ -108,6 +108,22 @@
     enable = true;
     package = pkgs.niri-custom;
   };
+
+  systemd.user.services.quickshell = {
+    description = "Quickshell desktop shell";
+    enableDefaultPath = false;
+    wantedBy = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.quickshell-custom}/bin/quickshell";
+      Restart = "on-failure";
+    };
+  };
+
+  system.userActivationScripts.restartQuickshell = {
+    text = "${pkgs.systemd}/bin/systemctl --user restart quickshell.service";
+  };
+
   programs.steam.enable = true;
   programs.gamescope.enable = true;
   programs.fuse.userAllowOther = true;
