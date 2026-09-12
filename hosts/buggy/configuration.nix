@@ -129,6 +129,10 @@
   programs.fuse.userAllowOther = true;
   nixpkgs.config.allowUnfree = true;
   programs.kdeconnect.enable = true;
+  xdg.portal = {
+    extraPortals = [ pkgs.hypr-kdeconnect-fix ];
+    config.niri."org.freedesktop.impl.portal.RemoteDesktop" = "hypr-kdeconnect";
+  };
 
   services.gvfs.enable = true; # required for certain nautilus functions
   services.greetd = {
@@ -157,7 +161,7 @@
 
   # System Profile
   environment.systemPackages = with pkgs; [
-    htop
+    bc
     zoxide
     fzf
     ripgrep
