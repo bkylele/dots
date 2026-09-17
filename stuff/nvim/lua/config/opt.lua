@@ -28,7 +28,7 @@ vim.o.termguicolors = true
 vim.o.conceallevel = 2
 vim.o.winborder = 'double'
 
-vim.cmd('colorscheme sorbet')
+vim.cmd('colorscheme vim')
 
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.tohtml')

@@ -1,6 +1,9 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = '\\'
 
+vim.cmd('cabbrev W update')
+vim.cmd('cabbrev w update')
+
 vim.keymap.set('n', '<c-c>', '<esc>')
 vim.keymap.set('t', '<c-[>', '<c-\\><c-n>')
 
@@ -15,16 +18,16 @@ vim.keymap.set('i', '<m-f>', '<C-o>W')
 vim.keymap.set('i', '<m-b>', '<C-o>B')
 vim.keymap.set('i', '<c-d>', '<C-o>dl')
 vim.keymap.set('i', '<m-d>', '<C-o>dW')
+vim.keymap.set('c', '<c-a>', '<home>')
+vim.keymap.set('c', '<c-e>', '<end>')
+vim.keymap.set('c', '<c-b>', '<left>')
+vim.keymap.set('c', '<m-f>', '<c-right>')
+vim.keymap.set('c', '<m-b>', '<c-left>')
+vim.keymap.set('c', '<c-d>', '<delete>')
+vim.keymap.set('c', '<m-d>', '<c-right><c-w><delete>')
 
-vim.keymap.set('c', '<c-a>'     , '<home>',                  { desc = 'emacs-style movement' }                )
-vim.keymap.set('c', '<c-e>'     , '<end>',                   { desc = 'emacs-style movement' }                )
-vim.keymap.set('c', '<c-b>'     , '<left>',                  { desc = 'emacs-style movement' }                )
-vim.keymap.set('c', '<m-f>'     , '<c-right>',               { desc = 'emacs-style movement' }                )
-vim.keymap.set('c', '<m-b>'     , '<c-left>',                { desc = 'emacs-style movement' }                )
-vim.keymap.set('c', '<c-d>'     , '<delete>',                { desc = 'emacs-style movement' }                )
-vim.keymap.set('c', '<m-d>'     , '<c-right><c-w><delete>',  { desc = 'emacs-style movement' }                )
-vim.keymap.set('n', '<c-d>'     , '<c-d>zz',                 { desc = 'emacs-style movement' }                )
-vim.keymap.set('n', '<c-u>'     , '<c-u>zz',                 { desc = 'emacs-style movement' }                )
+vim.keymap.set('n', '<c-d>'     , '<c-d>zz')
+vim.keymap.set('n', '<c-u>'     , '<c-u>zz')
 
 vim.keymap.set('i', '<c-s-j>'   , '<c-o><cmd>.move+1<cr>'                                                     )
 vim.keymap.set('i', '<c-s-k>'   , '<c-o><cmd>.move-2<cr>'                                                     )
@@ -39,111 +42,81 @@ vim.keymap.set('n', '<leader>ps', ':grep<space>""<left>'   , { desc = 'Grep' }  
 vim.keymap.set('v', '<leader>s' , ':s/'                    , { desc = 'Start substitue on current selection' })
 vim.keymap.set('v', '<leader>n' , ':norm<space>'           , { desc = 'Start norm on current selection' }     )
 
+-- Prefix+[ or ] starts a repeat mode; any other key restores the bracket maps.
+local repeat_active, repeat_running = false, false
+local repeat_actions, saved_maps, saved_buffers
 
--- q] / q[ starts a repeat mode; [ and ] stay untouched otherwise.
-local qf_repeat_active = false
-local qf_repeat_running = false
-local qf_repeat_ns = vim.api.nvim_create_namespace('quickfix-repeat')
-local qf_repeat_group = vim.api.nvim_create_augroup('quickfix-repeat', { clear = true })
-local qf_saved_maps = {}
-local qf_saved_buffers = {}
+local function suspend_bracket_maps(bufnr)
+    local id = bufnr or 0
+    if saved_buffers[id] then return end
+    saved_buffers[id] = true
 
-local function is_bracket_map(map)
-    local first = map.lhs:sub(1, 1)
-    return first == '[' or first == ']'
-end
-
-local function map_opts(map)
-    local opts = {
-        desc = map.desc ~= '' and map.desc or nil,
-        expr = map.expr == 1,
-        nowait = map.nowait == 1,
-        silent = map.silent == 1,
-        remap = map.noremap == 0,
-        replace_keycodes = map.replace_keycodes == 1,
-    }
-    if map.buffer and map.buffer > 0 then opts.buffer = map.buffer end
-    return opts
-end
-
-local function delete_map(map)
-    if map.buffer and map.buffer > 0 then
-        vim.api.nvim_buf_del_keymap(map.buffer, 'n', map.lhs)
-    else
-        vim.keymap.del('n', map.lhs)
-    end
-end
-
-local function save_buffer_maps(bufnr)
-    if qf_saved_buffers[bufnr] then return end
-    qf_saved_buffers[bufnr] = true
-
-    for _, map in ipairs(vim.api.nvim_buf_get_keymap(bufnr, 'n')) do
-        if is_bracket_map(map) then
-            qf_saved_maps[#qf_saved_maps + 1] = map
-            delete_map(map)
+    local maps = bufnr and vim.api.nvim_buf_get_keymap(bufnr, 'n') or vim.api.nvim_get_keymap('n')
+    for _, map in ipairs(maps) do
+        local first = map.lhs:sub(1, 1)
+        if first == '[' or first == ']' then
+            saved_maps[#saved_maps + 1] = { bufnr = bufnr, map = map }
+            vim.keymap.del('n', map.lhs, bufnr and { buffer = bufnr } or nil)
         end
     end
 end
 
-local function stop_qf_repeat()
-    if not qf_repeat_active then return end
-
-    qf_repeat_active = false
+local function stop_repeat()
+    if not repeat_active then return end
+    repeat_active = false
     pcall(vim.keymap.del, 'n', ']')
     pcall(vim.keymap.del, 'n', '[')
-    for _, map in ipairs(qf_saved_maps) do
-        if map.buffer == 0 or vim.api.nvim_buf_is_valid(map.buffer) then
-            vim.keymap.set('n', map.lhs, map.callback or map.rhs, map_opts(map))
+
+    for _, saved in ipairs(saved_maps) do
+        if not saved.bufnr or vim.api.nvim_buf_is_valid(saved.bufnr) then
+            local restore = function() vim.fn.mapset('n', false, saved.map) end
+            if saved.bufnr then vim.api.nvim_buf_call(saved.bufnr, restore) else restore() end
         end
     end
-    qf_saved_maps = {}
-    qf_saved_buffers = {}
 end
 
-local function run_qf_command(command)
-    qf_repeat_running = true
-    local ok, err = pcall(vim.cmd, command)
-    qf_repeat_running = false
+local function run_repeat(action)
+    repeat_running = true
+    local ok, err = pcall(action)
+    repeat_running = false
     if not ok then
-        stop_qf_repeat()
+        stop_repeat()
         error(err)
     end
 end
 
-local function start_qf_repeat(command)
-    qf_saved_maps = {}
-    qf_saved_buffers = {}
-    for _, map in ipairs(vim.api.nvim_get_keymap('n')) do
-        if is_bracket_map(map) then
-            qf_saved_maps[#qf_saved_maps + 1] = map
-            delete_map(map)
-        end
-    end
-    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-        if vim.api.nvim_buf_is_loaded(bufnr) then save_buffer_maps(bufnr) end
-    end
+local function start_repeat(previous, next, initial)
+    saved_maps, saved_buffers = {}, {}
+    suspend_bracket_maps()
+    suspend_bracket_maps(vim.api.nvim_get_current_buf())
+    repeat_actions, repeat_active = { previous, next }, true
 
-    qf_repeat_active = true
-    vim.keymap.set('n', ']', function() run_qf_command('cnext') end,
-        { desc = 'Quickfix: next', nowait = true, silent = true })
-    vim.keymap.set('n', '[', function() run_qf_command('cprevious') end,
-        { desc = 'Quickfix: previous', nowait = true, silent = true })
-    run_qf_command(command)
+    vim.keymap.set('n', '[', function() run_repeat(repeat_actions[1]) end, { nowait = true, silent = true })
+    vim.keymap.set('n', ']', function() run_repeat(repeat_actions[2]) end, { nowait = true, silent = true })
+    run_repeat(initial)
+end
+
+local function repeatable(prefix, label, previous, next)
+    vim.keymap.set('n', prefix .. '[', function() start_repeat(previous, next, previous) end,
+        { desc = label .. ': previous' })
+    vim.keymap.set('n', prefix .. ']', function() start_repeat(previous, next, next) end,
+        { desc = label .. ': next' })
 end
 
 vim.api.nvim_create_autocmd('BufEnter', {
-    group = qf_repeat_group,
+    group = vim.api.nvim_create_augroup('bracket-repeat', { clear = true }),
     callback = function(args)
-        if qf_repeat_active then save_buffer_maps(args.buf) end
+        if repeat_active then suspend_bracket_maps(args.buf) end
     end,
 })
 
 vim.on_key(function(_, typed)
-    if qf_repeat_active and not qf_repeat_running and typed ~= '[' and typed ~= ']' then
-        stop_qf_repeat()
-    end
-end, qf_repeat_ns)
+    if repeat_active and not repeat_running and typed ~= '[' and typed ~= ']' then stop_repeat() end
+end, vim.api.nvim_create_namespace('bracket-repeat'))
 
-vim.keymap.set('n', 'q]', function() start_qf_repeat('cnext') end,     { desc = 'Quickfix: next' })
-vim.keymap.set('n', 'q[', function() start_qf_repeat('cprevious') end, { desc = 'Quickfix: previous' })
+repeatable('q', 'Quickfix',
+    function() vim.cmd('cprevious') end,
+    function() vim.cmd('cnext') end)
+repeatable('d', 'Diagnostic',
+    function() vim.diagnostic.jump({ count = -1 }) end,
+    function() vim.diagnostic.jump({ count = 1 }) end)

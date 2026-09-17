@@ -91,6 +91,11 @@
       pull.rebase = true;
       init.defaultBranch = "main";
 
+      log = {
+        decorate = "short";
+        abbrevCommit = true;
+      };
+
       url = {
         "git@github.com:" = {
           insteadOf = [ "gh:" ];
@@ -164,25 +169,17 @@
     bc
     zoxide
     fzf
-    ripgrep
-    fd
-    bat
-    btop
-    antigravity-ide
+    htop
     claude-code
-    codex
-    nodejs
     pi-coding-agent
     xdg-user-dirs
     libnotify
     brightnessctl
-    wluma
     wl-clipboard
     wf-recorder
     slurp
     nautilus
     kdePackages.dolphin
-    quickshell-custom
     mpv
     imv
     rofi
@@ -195,6 +192,8 @@
     scrcpy
     android-tools
     iio-niri
+    zoom-us
+    quickshell-custom
     bash-custom
     neovim-custom
     hyprlock-custom

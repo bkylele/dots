@@ -109,6 +109,23 @@ window-rule {
     open-floating true
 }
 
+// KDE Connect's presentation pointer is a regular fullscreen window rather than a layer-shell overlay.
+// ponytail: this cannot cover fullscreen apps; remove when KDE Connect uses layer-shell.
+window-rule {
+    match app-id=r"org.kde.kdeconnect.daemon"
+    open-floating true
+    open-fullscreen false
+    default-floating-position x=0 y=0 relative-to="top-left"
+    default-column-width { proportion 1.0; }
+    default-window-height { proportion 1.0; }
+    tiled-state true
+    focus-ring { off; }
+    border { off; }
+    shadow { off; }
+    draw-border-with-background false
+    background-effect { blur false; }
+}
+
 // Enable rounded corners for all windows.
 window-rule {
     geometry-corner-radius 12
@@ -286,7 +303,7 @@ spawn-at-startup "hyprlock"
 spawn-at-startup "swayidle"
 spawn-at-startup "~/.config/niri/battery_notif.sh"
 spawn-at-startup "sh" "-c" "while true; do iio-niri listen; sleep 2; done";
-spawn-at-startup "wluma"
+// spawn-at-startup "wluma"
 
 
 hotkey-overlay {

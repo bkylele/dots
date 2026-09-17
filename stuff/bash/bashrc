@@ -24,13 +24,15 @@ alias ll='ls -lvh'
 alias l='la'
 alias vi=$EDITOR
 alias py='python'
-alias bc=', bc --mathlib'
-alias cat='bat'
-alias htop='btop'
+alias bc='bc --mathlib'
 alias open='xdg-open'
 alias vit='vi -c "Git log | only | vert Git"'
 alias vid='vi .'
 alias kssh='kitten +kitten ssh'
+alias lib='cd ~/dox/lib/ && vi readme.md && cd -'
+
+alias bashconf='cd ~/dots/stuff/bash/ && vi ~/dots/stuff/bash/bashrc && source ~/dots/stuff/bash/bashrc && cd -'
+alias viconf='cd ~/dots/stuff/nvim/ && vi ~/dots/stuff/nvim/init.lua && cd -'
 alias nixconf='cd ~/dots/ && vi ~/dots/hosts/buggy/configuration.nix && cd -'
 alias nixsw='nh os switch ~/dots/#buggy -j7'
 alias nixservsw='nh os switch ~/dots/#wapol --target-host brian@wapol -j7'
@@ -41,7 +43,7 @@ eval "$(direnv hook bash)"
 
 flake() {
   if [ ! -e flake.nix ]; then
-    nix flake new -t git+https://codeberg.org/bkle/dots .
+    nix flake new -t github:bkylele/dots .
   else
     vi flake.nix
     return
