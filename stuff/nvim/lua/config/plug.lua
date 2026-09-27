@@ -1,4 +1,4 @@
-vim.keymap.set('n', '<leader>pv', '<cmd>Oil<cr>',                               { desc = 'Open Oil' })
+-- vim.keymap.set('n', '<leader>pv', '<cmd>Oil<cr>',                               { desc = 'Open Oil' })
 vim.keymap.set('n', '<leader>u',  '<cmd>UndotreeShow | UndotreeFocus<cr>',      { desc = 'Open and focus Undotree' })
 vim.keymap.set('n', '<c-w><c-g>', '<cmd>NoNeckPain<cr>',                        { desc = 'Toggle NoNeckPain' })
 vim.keymap.set('n', '<leader>g',  '<cmd>G<cr>',                                 { desc = 'Open Git summary' })
@@ -35,18 +35,18 @@ require("no-neck-pain").setup({
     },
 })
 
-require('oil').setup({
-    columns = {
-        'icon',
-        'permissions',
-        'size',
-        'mtime',
-    },
-
-    skip_confirm_for_simple_edits = true,
-    watch_for_changes = true,
-    view_options = { show_hidden = true, },
-})
+-- require('oil').setup({
+--     columns = {
+--         'icon',
+--         'permissions',
+--         'size',
+--         'mtime',
+--     },
+--
+--     skip_confirm_for_simple_edits = true,
+--     watch_for_changes = true,
+--     view_options = { show_hidden = true, },
+-- })
 
 require('lean').setup({ mappings = true })
 

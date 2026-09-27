@@ -10,7 +10,15 @@
     ./hardware-configuration.nix
     ./hardware-extra.nix
   ];
- 
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "hm-backup";
+    extraSpecialArgs = { inherit inputs; };
+    users.brian = import ../../home/brian;
+  };
+
   nix = {
     settings.experimental-features = [
       "nix-command"
@@ -107,26 +115,14 @@
     };
   };
   programs.nix-index-database.comma.enable = true;
-  programs.direnv.enable = true;
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
   programs.firefox.enable = true;
   programs.niri = {
     enable = true;
-    package = pkgs.niri-custom;
-  };
-
-  systemd.user.services.quickshell = {
-    description = "Quickshell desktop shell";
-    enableDefaultPath = false;
-    wantedBy = [ "graphical-session.target" ];
-    after = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.quickshell-custom}/bin/quickshell";
-      Restart = "on-failure";
-    };
-  };
-
-  system.userActivationScripts.restartQuickshell = {
-    text = "${pkgs.systemd}/bin/systemctl --user restart quickshell.service";
+    package = pkgs.niri;
   };
 
   programs.steam.enable = true;
@@ -138,6 +134,8 @@
     extraPortals = [ pkgs.hypr-kdeconnect-fix ];
     config.niri."org.freedesktop.impl.portal.RemoteDesktop" = "hypr-kdeconnect";
   };
+
+  services.udev.packages = [ pkgs.vial ]; # udev rule for Vial to access keyboard hidraw device
 
   services.gvfs.enable = true; # required for certain nautilus functions
   services.greetd = {
@@ -151,6 +149,15 @@
     };
   };
   services.gnome.gnome-keyring.enable = true;
+  services.keyd = {
+    enable = true;
+    keyboards.default = {
+      ids = [ "*" ];
+      settings.main = {
+        capslock = "overload(control, esc)";
+      };
+    };
+  };
   services.tailscale.enable = true;
   # Lets brian run `tailscale up/down` without root, so the dashboard VPN toggle works.
   services.tailscale.extraSetFlags = [ "--operator=brian" ];
@@ -163,43 +170,6 @@
       "networkmanager"
     ];
   };
-
-  # System Profile
-  environment.systemPackages = with pkgs; [
-    bc
-    zoxide
-    fzf
-    htop
-    claude-code
-    pi-coding-agent
-    xdg-user-dirs
-    libnotify
-    brightnessctl
-    wl-clipboard
-    wf-recorder
-    slurp
-    nautilus
-    kdePackages.dolphin
-    mpv
-    imv
-    rofi
-    vesktop
-    slack
-    xournalpp
-    inputs.glide.packages.${pkgs.stdenv.hostPlatform.system}.default
-    catppuccin-cursors.mochaDark
-    xwayland-satellite
-    scrcpy
-    android-tools
-    iio-niri
-    zoom-us
-    quickshell-custom
-    bash-custom
-    neovim-custom
-    hyprlock-custom
-    swayidle-custom
-    kitty-custom
-  ];
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.

@@ -1,5 +1,5 @@
 {
-  description = "System Configuration";
+  description = "NixOS and Home Manager configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -8,6 +8,11 @@
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -24,17 +29,7 @@
       nixos-hardware,
       ...
     }@inputs:
-    let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
-    in
     {
-      packages.${system} = {
-        neovim = pkgs.callPackage ./stuff/nvim/default.nix { };
-        bash = pkgs.callPackage ./stuff/bash/default.nix { };
-        quickshell = pkgs.callPackage ./stuff/quickshell/default.nix { };
-      };
-
       templates = {
         default = {
           path = ./templates/default;
@@ -51,6 +46,7 @@
             ./overlays.nix
             nixos-hardware.nixosModules.microsoft-surface-pro-intel
             inputs.nix-index-database.nixosModules.default
+            inputs.home-manager.nixosModules.home-manager
           ];
         };
 

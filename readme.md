@@ -6,17 +6,29 @@ I like to experiment a lot with workflows, many things are subject to change.
 
 Using NixOS, you can just do:
 ```bash
-nixos-rebuild switch --flake git+https://codeberg.org/bkle/dots#buggy 
-# or equivalently
-git clone https://codeberg.org/bkle/dots && \
-    cd dots && \
-    nixos-rebuild switch --flake .
+git clone https://codeberg.org/bkle/dots ~/dots && \
+    cd ~/dots && \
+    sudo nixos-rebuild switch --flake .#buggy
 ```
+
+The desktop profile is managed by Home Manager as part of the NixOS rebuild.
+Application binaries are the normal Nixpkgs packages. Home Manager creates
+out-of-store links from their native locations (`~/.config`, plus `~/.bashrc`)
+to the files under `stuff/`, so edits in `~/dots` take effect directly.
+
+The Home Manager configuration is split by purpose:
+
+- `home/brian/packages.nix` contains user applications and Neovim plugins.
+- `home/brian/symlinks.nix` maps editable dotfiles to their native locations.
+- `home/brian/services.nix` contains user services such as Quickshell.
+
+Keep the checkout at `~/dots`; the editable links and existing shell helpers
+intentionally use that location. On the first rebuild, Home Manager preserves
+any conflicting unmanaged file with the suffix `.hm-backup`.
 
 ## TODO
 
-- Wrap niri
-- Wrap quickshell
+- Quickshell
     - dashboard
         - media control
         - resource monitor

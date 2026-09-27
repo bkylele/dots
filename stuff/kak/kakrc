@@ -1,0 +1,40 @@
+# Appearance ---------------------------------------------------------------------
+
+# Relative line numbers
+add-highlighter global/line-numbers number-lines -relative -hlcursor
+
+colorscheme tomorrow-night
+
+# Editing ---------------------------------------------------------------------
+
+set-option global tabstop 4
+set-option global indentwidth 4
+set-option global scrolloff 8,8
+
+map global insert '<c-[>' '<esc>' 	  -docstring 'alias for <esc> in insert mode'
+
+map global user y '<a-|>wl-copy<ret>' -docstring 'yank to system clipboard'
+map global user f '|fmt<ret>'         -docstring 'format selection with fmt'
+
+evaluate-commands %sh{
+    plugins="$kak_config/plugins"
+    mkdir -p "$plugins"
+	[ ! -e "$plugins/plug.kak" ] && \
+		git clone -q https://github.com/andreyorst/plug.kak.git "$plugins/plug.kak"
+    printf "%s\n" "source '$plugins/plug.kak/rc/plug.kak'"
+}
+
+plug "andreyorst/plug.kak" noload
+plug "alexherbo2/auto-pairs.kak"
+plug "andreyorst/fzf.kak" config %{
+    map global user 'p' ':fzf-mode<ret>' -docstring 'fzf mode'
+}
+plug "kakoune-lsp/kakoune-lsp" config %{
+    map global user l ':enter-user-mode lsp<ret>'    -docstring 'LSP mode'
+
+    map global user k ':lsp-hover<ret>'				 -docstring 'LSP hover'
+
+    map global goto d <esc>:lsp-definition<ret>      -docstring 'LSP definition'
+    map global goto r <esc>:lsp-references<ret>      -docstring 'LSP references'
+    map global goto y <esc>:lsp-type-definition<ret> -docstring 'LSP type definition'
+}

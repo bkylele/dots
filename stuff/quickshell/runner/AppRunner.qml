@@ -208,7 +208,7 @@ PanelWindow {
                     // Handle special keys
                     Keys.onPressed: function(event) {
                         var ctrl = event.modifiers & Qt.ControlModifier
-                        if (event.key === Qt.Key_Down || (ctrl && event.key === Qt.Key_N)) {
+                        if (event.key === Qt.Key_Down || (ctrl && event.key === Qt.Key_N) || (ctrl && event.key === Qt.Key_J)) {
                             if (!root.isNavigating) {
                                 // First press enters the list at the top
                                 if (root.filteredResults.length > 0) {
@@ -219,7 +219,7 @@ PanelWindow {
                                 root.selectedIndex++
                             }
                             event.accepted = true
-                        } else if (event.key === Qt.Key_Up || (ctrl && event.key === Qt.Key_P)) {
+                        } else if (event.key === Qt.Key_Up || (ctrl && event.key === Qt.Key_P) || (ctrl && event.key === Qt.Key_K)) {
                             if (!root.isNavigating) {
                                 if (root.filteredResults.length > 0) {
                                     root.isNavigating = true
@@ -389,7 +389,15 @@ PanelWindow {
         // Save to history
         saveToHistory(cmd)
         // Execute
-        execProc.command = ["setsid", "-f", "sh", "-c", cmd]
+        // `setsid -f` makes the parent process exit immediately. Without
+        // redirecting its streams, the detached application inherits
+        // Quickshell's Process pipes; those are closed when the parent exits,
+        // which makes Electron applications such as Vesktop fail with EPIPE.
+        execProc.command = [
+            "setsid", "-f", "sh", "-c",
+            "exec sh -c \"$1\" </dev/null >/dev/null 2>&1",
+            "sh", cmd
+        ]
         execProc.running = true
         // Hide the runner
         RunnerState.hide()
