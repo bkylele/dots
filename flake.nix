@@ -43,7 +43,6 @@
 
           modules = [
             ./hosts/buggy/configuration.nix
-            ./overlays.nix
             nixos-hardware.nixosModules.microsoft-surface-pro-intel
             inputs.nix-index-database.nixosModules.default
             inputs.home-manager.nixosModules.home-manager

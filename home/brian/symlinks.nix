@@ -8,31 +8,26 @@ let
 in
 {
   home.file.".bashrc".source = link "stuff/bash/bashrc";
+  # The target itself is executable. Do not set `executable` here: that makes
+  # Home Manager copy this intentionally out-of-store link while building.
+  home.file.".local/bin/keep-awake".source =
+    link "stuff/kde/keep-awake/keep-awake";
 
   xdg.configFile = {
-    "hypr/hyprlock.conf".source = link "stuff/hyprlock/hyprlock.conf";
     "kitty/kitty.conf".source = link "stuff/kitty/kitty.conf";
-    "swayidle/config".source = link "stuff/swayidle/config";
     "user-dirs.dirs".source = link "stuff/xdg-user-dirs/user-dirs.dirs";
-
-    "niri/config.kdl".source = link "stuff/niri/config.kdl";
-    "niri/battery_notif.sh".source = link "stuff/niri/battery_notif.sh";
-    "niri/power_menu.sh".source = link "stuff/niri/power_menu.sh";
-    "niri/screen_record.sh".source = link "stuff/niri/screen_record.sh";
-    "niri/toggle_idle.sh".source = link "stuff/niri/toggle_idle.sh";
 
     "nvim/init.lua".source = link "stuff/nvim/init.lua";
     "nvim/lua".source = link "stuff/nvim/lua";
 
-    "quickshell/shell.qml".source = link "stuff/quickshell/shell.qml";
-    "quickshell/dashboard".source = link "stuff/quickshell/dashboard";
-    "quickshell/notifications".source = link "stuff/quickshell/notifications";
-    "quickshell/panels".source = link "stuff/quickshell/panels";
-    "quickshell/runner".source = link "stuff/quickshell/runner";
-    "quickshell/services".source = link "stuff/quickshell/services";
-    "quickshell/widgets".source = link "stuff/quickshell/widgets";
-
-    # Kakoune's plugin manager owns the sibling plugins/ directory.
-    "kak/kakrc".source = link "stuff/kak/kakrc";
+    # ~/.config/kak is intentionally a direct directory link to stuff/kak,
+    # so Kakoune can manage its plugins/ sibling directory. Do not manage a
+    # child here: Home Manager follows that directory link and would overwrite
+    # the source kakrc in this repository.
   };
+
+  # A local Plasma package keeps the widget editable without rebuilding its
+  # assets. Restart Plasma after changing its QML while it is running.
+  xdg.dataFile."plasma/plasmoids/org.brian.keepawake".source =
+    link "stuff/kde/keep-awake/plasmoid";
 }

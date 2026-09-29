@@ -1,6 +1,4 @@
 {
-  config,
-  lib,
   pkgs,
   inputs,
   ...
@@ -57,16 +55,6 @@
   networking.networkmanager.enable = true;
   hardware.bluetooth.enable = true;
 
-  networking.firewall = rec {
-    allowedUDPPortRanges = [
-      {
-        from = 1714;
-        to = 1764;
-      }
-    ];
-    allowedTCPPortRanges = allowedUDPPortRanges;
-  };
-
   networking.firewall.allowedUDPPorts = [ 51820 ];
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -76,6 +64,7 @@
     XDG_BIN_HOME = "$HOME/.local/bin";
     PATH = [ "${XDG_BIN_HOME}" ];
     HISTFILE = "$HOME/.local/state/.bash_history";
+    TERMINAL = "kitty";
   };
 
   fonts.packages = with pkgs; [
@@ -120,9 +109,22 @@
     nix-direnv.enable = true;
   };
   programs.firefox.enable = true;
-  programs.niri = {
+
+  services.desktopManager.plasma6.enable = true;
+  environment.plasma6.excludePackages = [ pkgs.kdePackages.konsole ];
+  services.displayManager = {
+    defaultSession = "plasma";
+    sddm = {
+      enable = true;
+      wayland.enable = true;
+    };
+  };
+  xdg.terminal-exec = {
     enable = true;
-    package = pkgs.niri;
+    settings = {
+      default = [ "kitty.desktop" ];
+      KDE = [ "kitty.desktop" ];
+    };
   };
 
   programs.steam.enable = true;
@@ -130,25 +132,9 @@
   programs.fuse.userAllowOther = true;
   nixpkgs.config.allowUnfree = true;
   programs.kdeconnect.enable = true;
-  xdg.portal = {
-    extraPortals = [ pkgs.hypr-kdeconnect-fix ];
-    config.niri."org.freedesktop.impl.portal.RemoteDesktop" = "hypr-kdeconnect";
-  };
 
   services.udev.packages = [ pkgs.vial ]; # udev rule for Vial to access keyboard hidraw device
 
-  services.gvfs.enable = true; # required for certain nautilus functions
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        # login handled by niri/session locker
-        command = "${config.programs.niri.package}/bin/niri-session";
-        user = "brian";
-      };
-    };
-  };
-  services.gnome.gnome-keyring.enable = true;
   services.keyd = {
     enable = true;
     keyboards.default = {
@@ -159,7 +145,7 @@
     };
   };
   services.tailscale.enable = true;
-  # Lets brian run `tailscale up/down` without root, so the dashboard VPN toggle works.
+  # Let brian manage the Tailscale connection without root.
   services.tailscale.extraSetFlags = [ "--operator=brian" ];
 
   # User Profiles

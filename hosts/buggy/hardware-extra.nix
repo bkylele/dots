@@ -19,6 +19,8 @@
   hardware.sensor.iio.enable = true;
 
   services.thermald.enable = true;
+  # Plasma enables this by default, but it conflicts with auto-cpufreq below.
+  services.power-profiles-daemon.enable = false;
   services.auto-cpufreq.enable = true;
   services.auto-cpufreq.settings = {
     battery = {

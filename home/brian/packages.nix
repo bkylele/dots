@@ -31,42 +31,28 @@ in
     # Configured applications use their native XDG config paths. None of these
     # packages are wrapped to inject configuration or command-line arguments.
     bash
-    hyprlock
     kitty
     neovim-unwrapped
-    quickshell
-    swayidle
 
-    alacritty
     bc
     zoxide
     fzf
     htop
+    libnotify
     nodejs
     claude-code
     codex
     pi-coding-agent
-    xdg-user-dirs
-    libnotify
-    brightnessctl
-    wl-clipboard
-    wf-recorder
-    slurp
-    nautilus
-    kdePackages.dolphin
+    wl-clipboard # Used by the Kakoune system-clipboard mapping.
     mpv
-    imv
-    rofi
     vesktop
     slack
     xournalpp
     inputs.glide.packages.${pkgs.stdenv.hostPlatform.system}.default
     qutebrowser
     catppuccin-cursors.mochaDark
-    xwayland-satellite
     scrcpy
     android-tools
-    iio-niri
     zoom-us
     vial
     kakoune

@@ -1,0 +1,19 @@
+{
+  "KPlugin": {
+    "Authors": [
+      {
+        "Name": "Brian Le"
+      }
+    ],
+    "Category": "System Information",
+    "Description": "Prevent idle-triggered suspend",
+    "EnabledByDefault": false,
+    "Icon": "preferences-system-power-management",
+    "Id": "org.brian.keepawake",
+    "License": "MIT",
+    "Name": "Keep Awake",
+    "Version": "1.0"
+  },
+  "X-Plasma-API": "declarativeappletscript",
+  "X-Plasma-API-Minimum-Version": "6.0"
+}
