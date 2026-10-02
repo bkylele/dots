@@ -52,7 +52,7 @@ in
     vesktop
     slack
     xournalpp
-    zotero
+    # zotero
     inputs.glide.packages.${pkgs.stdenv.hostPlatform.system}.default
     qutebrowser
     catppuccin-cursors.mochaDark
