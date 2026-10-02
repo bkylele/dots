@@ -6,6 +6,7 @@ vim.cmd('cabbrev w update')
 
 vim.keymap.set('n', '<c-c>', '<esc>')
 vim.keymap.set('t', '<c-[>', '<c-\\><c-n>')
+vim.keymap.set('i', 'jk', '<esc>')
 
 -- emacs style movement in insert mode
 vim.keymap.set('i', '<c-n>', '<C-o>j')

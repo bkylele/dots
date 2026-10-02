@@ -13,6 +13,25 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
+    backupCommand = pkgs.writeShellScript "home-manager-backup" ''
+      target=$1
+      backup="$target.''${HOME_MANAGER_BACKUP_EXT:-hm-backup}"
+
+      if [[ -e "$backup" || -L "$backup" ]]; then
+        timestamp="$(${pkgs.coreutils}/bin/date --utc +%Y%m%dT%H%M%SZ)"
+        candidate="$backup.$timestamp"
+        counter=1
+
+        while [[ -e "$candidate" || -L "$candidate" ]]; do
+          candidate="$backup.$timestamp.$counter"
+          ((counter += 1))
+        done
+
+        backup=$candidate
+      fi
+
+      ${pkgs.coreutils}/bin/mv -- "$target" "$backup"
+    '';
     extraSpecialArgs = { inherit inputs; };
     users.brian = import ../../home/brian;
   };
@@ -110,20 +129,17 @@
   };
   programs.firefox.enable = true;
 
-  services.desktopManager.plasma6.enable = true;
-  environment.plasma6.excludePackages = [ pkgs.kdePackages.konsole ];
+  services.xserver.enable = true;
+  services.desktopManager.gnome.enable = true;
   services.displayManager = {
-    defaultSession = "plasma";
-    sddm = {
-      enable = true;
-      wayland.enable = true;
-    };
+    defaultSession = "gnome";
+    gdm.enable = true;
   };
   xdg.terminal-exec = {
     enable = true;
     settings = {
       default = [ "kitty.desktop" ];
-      KDE = [ "kitty.desktop" ];
+      GNOME = [ "kitty.desktop" ];
     };
   };
 
@@ -132,6 +148,9 @@
   programs.fuse.userAllowOther = true;
   nixpkgs.config.allowUnfree = true;
   programs.kdeconnect.enable = true;
+
+  # GUI applications such as XIVLauncher use the freedesktop Secret Service.
+  services.gnome.gnome-keyring.enable = true;
 
   services.udev.packages = [ pkgs.vial ]; # udev rule for Vial to access keyboard hidraw device
 

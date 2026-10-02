@@ -19,17 +19,6 @@
   hardware.sensor.iio.enable = true;
 
   services.thermald.enable = true;
-  # Plasma enables this by default, but it conflicts with auto-cpufreq below.
-  services.power-profiles-daemon.enable = false;
-  services.auto-cpufreq.enable = true;
-  services.auto-cpufreq.settings = {
-    battery = {
-      governor = "powersave";
-      turbo = "never";
-    };
-    charger = {
-      governor = "performance";
-      turbo = "auto";
-    };
-  };
+  # GNOME uses this for the power-mode controls in its system menu.
+  services.power-profiles-daemon.enable = true;
 }

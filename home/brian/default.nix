@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./gnome.nix
     ./packages.nix
     ./symlinks.nix
     ./services.nix

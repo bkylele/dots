@@ -8,13 +8,10 @@ let
 in
 {
   home.file.".bashrc".source = link "stuff/bash/bashrc";
-  # The target itself is executable. Do not set `executable` here: that makes
-  # Home Manager copy this intentionally out-of-store link while building.
-  home.file.".local/bin/keep-awake".source =
-    link "stuff/kde/keep-awake/keep-awake";
 
   xdg.configFile = {
     "kitty/kitty.conf".source = link "stuff/kitty/kitty.conf";
+    "monitors.xml".source = link "stuff/gnome/monitors.xml";
     "user-dirs.dirs".source = link "stuff/xdg-user-dirs/user-dirs.dirs";
 
     "nvim/init.lua".source = link "stuff/nvim/init.lua";
@@ -26,8 +23,4 @@ in
     # the source kakrc in this repository.
   };
 
-  # A local Plasma package keeps the widget editable without rebuilding its
-  # assets. Restart Plasma after changing its QML while it is running.
-  xdg.dataFile."plasma/plasmoids/org.brian.keepawake".source =
-    link "stuff/kde/keep-awake/plasmoid";
 }

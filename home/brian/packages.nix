@@ -45,9 +45,14 @@ in
     pi-coding-agent
     wl-clipboard # Used by the Kakoune system-clipboard mapping.
     mpv
+    # Keep the KDE applications used independently of the Plasma desktop.
+    kdePackages.dolphin
+    kdePackages.kate
+    kdePackages.spectacle
     vesktop
     slack
     xournalpp
+    zotero
     inputs.glide.packages.${pkgs.stdenv.hostPlatform.system}.default
     qutebrowser
     catppuccin-cursors.mochaDark
