@@ -19,6 +19,6 @@
   hardware.sensor.iio.enable = true;
 
   services.thermald.enable = true;
-  # GNOME uses this for the power-mode controls in its system menu.
+  # Plasma uses this for its power-mode controls.
   services.power-profiles-daemon.enable = true;
 }

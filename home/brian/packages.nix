@@ -27,7 +27,7 @@ let
   ]);
 in
 {
-  home.packages = with pkgs; [
+  users.users.brian.packages = with pkgs; [
     # Configured applications use their native XDG config paths. None of these
     # packages are wrapped to inject configuration or command-line arguments.
     bash
@@ -45,7 +45,7 @@ in
     pi-coding-agent
     wl-clipboard # Used by the Kakoune system-clipboard mapping.
     mpv
-    # Keep the KDE applications used independently of the Plasma desktop.
+    # The explicitly selected KDE applications.
     kdePackages.dolphin
     kdePackages.kate
     kdePackages.spectacle
@@ -66,12 +66,14 @@ in
     pythonWithPynvim
   ];
 
-  # Put plugins in Neovim's standard package directory so the unwrapped binary
-  # finds them without injected runtimepath or packpath flags.
-  home.file = lib.listToAttrs (
-    map (plugin: {
-      name = ".local/share/nvim/site/pack/dots/start/${lib.getName plugin}";
-      value.source = plugin;
-    }) neovimPlugins
-  );
+  # Neovim searches XDG_DATA_DIRS, including the system profile's share/nvim/site.
+  environment.systemPackages = [
+    (pkgs.runCommand "dots-neovim-plugins" { } ''
+      mkdir -p "$out/share/nvim/site/pack/dots/start"
+      ${lib.concatMapStringsSep "\n" (plugin: ''
+        ln -s ${plugin} "$out/share/nvim/site/pack/dots/start/${lib.getName plugin}"
+      '') neovimPlugins}
+    '')
+  ];
+  environment.pathsToLink = [ "/share/nvim" ];
 }

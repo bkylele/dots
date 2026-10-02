@@ -1,0 +1,63 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+PS1='\n[\[\033[1;34m\]\w\[\033[1;37m\]] \[\033[1;31m\]$(git branch --show-current 2> /dev/null)\n\[\033[1;36m\]\h \[\033[1;32m\]⊨\[\033[00m\] '
+
+export EDITOR="nvim"
+export TERMINAL="kitty"
+
+function cd() {
+    z $@
+    ls -lvah
+}
+
+alias grep='grep -IHn --color'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias -- -='cd -'
+alias ls='ls --color=auto'
+alias la='ls -lvah'
+alias ll='ls -lvh'
+alias l='la'
+alias vi=$EDITOR
+alias py='python'
+alias bc='bc --mathlib'
+alias open='xdg-open'
+alias vit='vi -c "Git log | only | vert Git"'
+alias vid='vi .'
+alias kssh='kitten +kitten ssh'
+alias lib='cd ~/dox/lib/ && vi readme.md && cd -'
+
+alias bashconf='cd ~/dots/stow/apps/ && vi .bashrc && source .bashrc && cd -'
+alias viconf='cd ~/dots/stow/apps/.config/nvim/ && vi init.lua && cd -'
+alias nixconf='cd ~/dots/ && vi ~/dots/hosts/buggy/configuration.nix && cd -'
+alias nixsw='nh os switch ~/dots/#buggy -j7'
+alias nixservsw='nh os switch ~/dots/#wapol --target-host brian@wapol -j7'
+
+eval "$(fzf --bash)"
+eval "$(zoxide init bash)"
+eval "$(direnv hook bash)"
+
+flake() {
+  if [ ! -e flake.nix ]; then
+    nix flake new -t github:bkylele/dots .
+  else
+    vi flake.nix
+    return
+  fi
+
+  if [ ! -e .envrc ]; then
+    echo "use flake" > .envrc
+    direnv allow
+  fi
+
+  vi flake.nix +/cowsay
+}
+
+unfree() {
+    NIXPKGS_ALLOW_UNFREE=1 $@ --impure
+}

@@ -1,40 +1,13 @@
 {
   pkgs,
-  inputs,
   ...
 }:
 {
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
+    ../../home/brian
   ];
-
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    backupFileExtension = "hm-backup";
-    backupCommand = pkgs.writeShellScript "home-manager-backup" ''
-      target=$1
-      backup="$target.''${HOME_MANAGER_BACKUP_EXT:-hm-backup}"
-
-      if [[ -e "$backup" || -L "$backup" ]]; then
-        timestamp="$(${pkgs.coreutils}/bin/date --utc +%Y%m%dT%H%M%SZ)"
-        candidate="$backup.$timestamp"
-        counter=1
-
-        while [[ -e "$candidate" || -L "$candidate" ]]; do
-          candidate="$backup.$timestamp.$counter"
-          ((counter += 1))
-        done
-
-        backup=$candidate
-      fi
-
-      ${pkgs.coreutils}/bin/mv -- "$target" "$backup"
-    '';
-    extraSpecialArgs = { inherit inputs; };
-    users.brian = import ../../home/brian;
-  };
 
   nix = {
     settings.experimental-features = [
@@ -129,17 +102,11 @@
   };
   programs.firefox.enable = true;
 
-  services.xserver.enable = true;
-  services.desktopManager.gnome.enable = true;
-  services.displayManager = {
-    defaultSession = "gnome";
-    gdm.enable = true;
-  };
   xdg.terminal-exec = {
     enable = true;
     settings = {
       default = [ "kitty.desktop" ];
-      GNOME = [ "kitty.desktop" ];
+      KDE = [ "kitty.desktop" ];
     };
   };
 

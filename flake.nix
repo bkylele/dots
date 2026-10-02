@@ -1,5 +1,5 @@
 {
-  description = "NixOS and Home Manager configuration";
+  description = "NixOS configuration with GNU Stow dotfiles";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -8,11 +8,6 @@
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -45,7 +40,6 @@
             ./hosts/buggy/configuration.nix
             nixos-hardware.nixosModules.microsoft-surface-pro-intel
             inputs.nix-index-database.nixosModules.default
-            inputs.home-manager.nixosModules.home-manager
           ];
         };
 
