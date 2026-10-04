@@ -16,8 +16,8 @@ applications and runs GNU Stow as `brian` during activation (including
 `nixos-rebuild switch`). `wapol` remains a headless server. Home Manager is no
 longer used; Glide still has its own transitive Home Manager flake input.
 
-`home/brian/` now contains ordinary NixOS modules: `packages.nix`, `plasma.nix`,
-and `symlinks.nix`. Neovim remains unwrapped; Nix installs its existing plugins
+`home/brian/` contains ordinary NixOS modules for packages, Plasma, and Stow.
+Neovim remains unwrapped; Nix installs its existing plugins
 under the system profile's `share/nvim/site/pack/dots/start`.
 
 ## Dotfiles and GNU Stow
@@ -35,8 +35,7 @@ home directory directly to those files and directories:
 | `~/.config/kak` | `.config/kak` (including locally managed plugins) |
 | `~/.config/user-dirs.dirs` | `.config/user-dirs.dirs` |
 
-`stuff/` retains the original copies and retired desktop configurations; none
-are used by the new setup. Edit the files in `stow/apps/` going forward.
+The old `stuff/` directory has been removed. Edit files in `stow/apps/`.
 Kakoune's existing plugins were copied too, but remain Git-ignored local state.
 
 The activation helper `dots-stow` preserves conflicting files, directories,
@@ -66,17 +65,54 @@ add its destination to `targets` in `home/brian/stow.sh` for conflict backups.
 Keep shared parent directories real directories. See the
 [GNU Stow manual](https://www.gnu.org/software/stow/manual/stow.html).
 
-## Minimal Plasma
+## Reproducible Plasma settings
+
+Edit `home/brian/plasma-settings.nix` for KDE preferences. Each top-level key is
+a filename in `~/.config`; its attributes are KConfig sections and settings.
+Nested section names use `][`, for example `"services][kitty.desktop"`.
+`plasma-config.nix` generates these files in the Nix store, then restores writable
+copies during `nixos-rebuild switch` and before each graphical login for `brian`.
+This keeps KDE's runtime writes out of the repository. GUI changes to managed
+files are temporary: put lasting changes in Nix before rebuilding.
+
+The configuration includes Se7enAero appearance, nine desktops in three rows,
+custom shortcuts, Surface touchpad behavior, two bottom panels, and Dolphin,
+Kate, and Spectacle preferences. The panel definition shares one layout across
+screens 0 and 1: launcher, pager, tasks, tray, clock, and show-desktop button.
+The old keep-awake shortcut was omitted because its executable is missing.
+
+`plasma-theme.tar.xz` is an offline snapshot of the existing Se7enAero global
+theme, Plasma style, Aurorae decorations, Win11 icons, Win7OS color scheme, and
+Windows 7 wallpapers from `~/.local/share`. Nix installs those assets and links
+the corresponding user theme directories to the store so local copies cannot
+override them. `plasma-colors.ini` preserves the current palette. Aurorae is
+retained because this theme requires it; no theme downloads happen at activation.
+
+The first overwritten copy of each configuration file is preserved in
+`~/.local/state/dots-plasma/backup/`; replaced local theme assets are moved into
+`theme.*` directories there. Log out and back in after rebuilding: already-running
+KDE processes may retain old settings, and the login step reapplies the selected
+generation before Plasma starts. Rollback restores that generation's desktop
+settings on the next login. The helper can also be run manually as `dots-plasma-apply`.
+
+Monitor detection/layout history (`kwinoutputconfig.json`), session restore data,
+recent files, caches, and KDE Connect pairing credentials remain local. The
+managed desktop preferences and theme are reproducible; those device-specific
+and private runtime files are not copied into Nix.
+
+## Plasma packages
 
 Dolphin, Kate, Spectacle and KDE Connect remain installed, with Kitty as the
 terminal. All other optional Plasma packages are excluded except integration
-needed by those apps (`ktexteditor`, `kconfig`, `qtbase`) and Surface autorotation
-(`qtsensors`). The exclusions in `home/brian/plasma.nix` are:
+needed by those apps (`ktexteditor`, `kconfig`, `qtbase`), Surface autorotation
+(`qtsensors`), login/lock-screen typing (`qtvirtualkeyboard`), and Se7enAero
+decorations (`aurorae`). The exclusions in
+`home/brian/plasma.nix` are:
 
 - Apps: Konsole, Ark, Elisa, Gwenview, Okular, KHelpCenter, Discover, Qrca.
-- Extras: Aurorae, browser integration, extra wallpapers, X11 KWin, Qt tools
+- Extras: browser integration, extra wallpapers, X11 KWin, Qt tools
   CLI (`qdbus`), Baloo widgets, Dolphin plugins, FFmpeg thumbnails, KRdp,
-  Plasma Keyboard, Qt Virtual Keyboard, Union theme.
+  Plasma Keyboard, Union theme.
 - Disabled defaults: KDE PIM (Akonadi and its runtime), Orca, Qt 5 integration.
 
 NixOS's required Plasma components remain, including System Settings, KWallet,
@@ -86,6 +122,39 @@ required/optional boundary; it does not replace that module with a custom deskto
 Exclusion removes optional profile entries, not libraries still needed as
 dependencies (for example, SDDM still uses Qt Virtual Keyboard).
 The existing GNOME Keyring stays for applications using Secret Service.
+
+## Surface tablet support
+
+The Surface Pro 8 uses the existing linux-surface kernel, IPTSD touch/pen daemon,
+IIO sensor service and Plasma Wayland. Tablet mode switches automatically with
+the Type Cover; rotation support and Xournal++ for pen notes were already installed.
+
+- Maliit is the session keyboard, selected in `plasma-settings.nix`. It opens for
+  touch or pen focus, rather than mouse clicks. Its tablet layout, English language,
+  suggestions and spell checking are declared through dconf in `plasma.nix`.
+  The package override points Hunspell at the Nix-provided English dictionary.
+- SDDM uses Qt Virtual Keyboard for touch login. Qt Virtual Keyboard also remains
+  available for Plasma's lock screen. Do not globally set `QT_IM_MODULE=maliit`:
+  KWin starts the input method for the Wayland session.
+- IPTSD suppresses touchscreen contacts while a pen is nearby or a palm is
+  detected. This improves writing, but prevents simultaneous pen-and-finger
+  gestures. Change `DisableOnStylus` in `hardware-extra.nix` if you prefer those.
+- A Surface-specific udev rule retains the touchscreen's systemd tag across
+  device events, keeping its device-bound IPTSD service available. Plasma's
+  tablet settings use the packaged Surface-aware libwacom database.
+- Panels are 48 pixels tall for easier touch targets. Maliit brings its own Qt 5
+  dependencies; the optional desktop-wide Qt 5 theme integration stays disabled.
+
+After rebuilding, reboot to apply device rules and start a fresh desktop session.
+Detach/fold the Type Cover, check rotation, tap a text field to open Maliit, and
+test pen pressure/palm rejection in Xournal++. On-screen input still depends on
+application text-input support; some XWayland applications may not summon it.
+Useful diagnostics are `systemctl status 'iptsd@*'`, `journalctl -b -u 'iptsd@*'`,
+and `monitor-sensor` (available through `nix shell nixpkgs#iio-sensor-proxy`).
+
+References: [Maliit](https://github.com/maliit/keyboard),
+[IPTSD settings](https://github.com/linux-surface/iptsd/blob/master/etc/iptsd.conf),
+[SDDM input method](https://github.com/sddm/sddm/blob/develop/data/man/sddm.conf.rst.in).
 
 For the first migration, save your work and preferably rebuild from a TTY,
 because replacing GDM can terminate the graphical session. Reboot afterward.
