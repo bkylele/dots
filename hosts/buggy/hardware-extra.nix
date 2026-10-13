@@ -12,6 +12,17 @@
 
   hardware.sensor.iio.enable = true;
 
+  # The packaged unit is normally started by the sensor udev rule. On this
+  # Surface the IIO devices can exist before that rule is applied, leaving
+  # Plasma's Qt sensor backend waiting forever for SensorProxy.
+  systemd.services.iio-sensor-proxy = {
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
+
   # Keep the pen responsive while resting a palm on the display. Touch resumes
   # when the pen leaves proximity (pen + simultaneous finger gestures are off).
   services.iptsd.config.Touchscreen = {
@@ -23,6 +34,12 @@
   # has lost its systemd tag on a later event, stopping the bound IPTSD service.
   services.udev.extraRules = ''
     SUBSYSTEM=="hidraw", KERNELS=="0001:045E:0C37.*", TAG+="systemd", ENV{SYSTEMD_WANTS}+="iptsd@dev-%k.service"
+
+    # The Surface HID sensors advertise both poll and buffer backends. The
+    # buffer backend stalls SensorProxy claims for several seconds, so use
+    # the working raw-value polling path for orientation and light instead.
+    SUBSYSTEM=="iio", KERNELS=="HID-SENSOR-200073.6.auto", ENV{IIO_SENSOR_PROXY_TYPE}="iio-poll-accel"
+    SUBSYSTEM=="iio", KERNELS=="HID-SENSOR-200041.4.auto", ENV{IIO_SENSOR_PROXY_TYPE}="iio-poll-als"
   '';
 
   # Give Plasma's tablet settings the Surface device database without replacing

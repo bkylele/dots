@@ -34,6 +34,7 @@ in
     kitty
     neovim-unwrapped
 
+    jujutsu
     bc
     zoxide
     fzf
@@ -53,11 +54,8 @@ in
     slack
     xournalpp
     # zotero
-    inputs.glide.packages.${pkgs.stdenv.hostPlatform.system}.default
-    qutebrowser
+    stremio-linux-shell
     catppuccin-cursors.mochaDark
-    scrcpy
-    android-tools
     zoom-us
     vial
     kakoune

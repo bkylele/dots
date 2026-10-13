@@ -75,18 +75,43 @@ copies during `nixos-rebuild switch` and before each graphical login for `brian`
 This keeps KDE's runtime writes out of the repository. GUI changes to managed
 files are temporary: put lasting changes in Nix before rebuilding.
 
-The configuration includes Se7enAero appearance, nine desktops in three rows,
-custom shortcuts, Surface touchpad behavior, two bottom panels, and Dolphin,
-Kate, and Spectacle preferences. The panel definition shares one layout across
-screens 0 and 1: launcher, pager, tasks, tray, clock, and show-desktop button.
-The old keep-awake shortcut was omitted because its executable is missing.
+The configuration includes AeroThemePlasma appearance, nine desktops in three rows,
+custom shortcuts, Surface touchpad behavior, and Dolphin, Kate, and Spectacle
+preferences. Nested names such as `"Kvantum/kvantum.kvconfig"` create files in
+subdirectories of `~/.config`. The old keep-awake shortcut was omitted because
+its executable is missing.
 
-`plasma-theme.tar.xz` is an offline snapshot of the existing Se7enAero global
+## AeroThemePlasma
+
+[AeroThemePlasma](https://gitgud.io/wackyideas/aerothemeplasma) (ATP) recreates
+Windows 7 on Plasma. It is packaged by the
+[aerothemeplasma-nix](https://github.com/nyakase/aerothemeplasma-nix) flake input,
+pinned in `flake.lock`, and enabled in `home/brian/aerothemeplasma.nix`. That
+installs the AeroShell session (patched `libplasma` and an `aeroshell` build of
+`plasmashell`), the SMOD decoration and KWin effects, Seven-Black, Kvantum,
+icons, cursors, sounds, Segoe UI, the UAC-style Polkit agent and the SDDM theme.
+SDDM preselects the Wayland "AeroThemePlasma" session; stock Plasma remains in
+the session list. There is no binary cache, so the first build compiles
+`libplasma` and `plasma-workspace` (see the build limits under Quirks).
+
+ATP normally finishes setup with a first-run wizard that writes user settings.
+Here those settings live in `plasma-settings.nix` instead: the `authui7` global
+theme, Aero colors (appended to `kdeglobals` from the packaged `Aero.colors`),
+Segoe UI fonts, `aero-drop` cursors, SMOD decoration, Seven-Black, the Kvantum
+theme, AeroShell effect toggles and ATP's default window rules.
+`aerothemeplasmarc` marks the wizard as done, so it does not run.
+
+AeroShell builds its taskbar from ATP's layout on first start and keeps it in
+`plasma-io.gitgud.wackyideas.desktop-appletsrc`, which is not managed. The
+declared two-panel layout applies only to the stock Plasma session.
+`plasmashellrc` is not managed either, because AeroShell stores panel geometry
+there. To update ATP, run `nix flake update aerothemeplasma-nix`. A Plasma
+upgrade in nixpkgs can break the patched packages until the flake catches up.
+
+`plasma-theme.tar.xz` is an offline snapshot of the earlier Se7enAero global
 theme, Plasma style, Aurorae decorations, Win11 icons, Win7OS color scheme, and
-Windows 7 wallpapers from `~/.local/share`. Nix installs those assets and links
-the corresponding user theme directories to the store so local copies cannot
-override them. `plasma-colors.ini` preserves the current palette. Aurorae is
-retained because this theme requires it; no theme downloads happen at activation.
+Windows 7 wallpapers from `~/.local/share`. These assets are still installed and
+pinned so the stock Plasma layout keeps its wallpaper, but they are not selected.
 
 The first overwritten copy of each configuration file is preserved in
 `~/.local/state/dots-plasma/backup/`; replaced local theme assets are moved into

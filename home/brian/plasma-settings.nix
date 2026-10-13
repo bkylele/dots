@@ -5,6 +5,9 @@
 }:
 let
   # Preserve the existing activity and panel IDs, without desktop-file history.
+  # Qt 6 QFont::toString() form of Segoe UI Regular, as ATP's wizard writes it.
+  effects = enabled: ids: lib.genAttrs (map (id: "${id}Enabled") ids) (_: enabled);
+  segoe = size: "Segoe UI,${toString size},-1,5,400,0,0,0,0,0,0,0,0,0,0,1,Regular";
   activity = "3fca704a-42c6-410d-a957-83c07af8f755";
   panels = [
     {
@@ -66,37 +69,52 @@ let
     );
 in
 {
-  # Se7enAero assets are captured in plasma-theme.tar.xz and installed by Nix.
+  # AeroThemePlasma appearance. These mirror ATP's authui7 defaults and the
+  # settings its first-run wizard writes, so restoring these files each login
+  # keeps the theme instead of reverting it. kdeglobals also receives the Aero
+  # color scheme's groups in plasma-config.nix.
   kdeglobals = {
     KDE = {
       AnimationDurationFactor = 0.5;
-      LookAndFeelPackage = "Se7enAero";
-      DefaultLightLookAndFeel = "Se7enAero";
-      widgetStyle = "fusion";
+      LookAndFeelPackage = "authui7";
+      DefaultLightLookAndFeel = "authui7";
+      widgetStyle = "kvantum";
       contrast = 0;
       frameContrast = "0.2";
     };
     General = {
-      ColorScheme = "Win7OS";
+      ColorScheme = "Aero";
+      AccentColor = "0,0,0,0";
+      accentColorFromWallpaper = false;
       DeviceLedsAccentColored = true;
       XftAntialias = true;
       XftHintStyle = "hintnone";
       XftSubPixel = "rgb";
       TerminalApplication = "kitty";
       TerminalService = "kitty.desktop";
+      font = segoe 9;
+      menuFont = segoe 9;
+      toolBarFont = segoe 9;
+      smallestReadableFont = segoe 8;
     };
-    Icons.Theme = "Win11";
+    # Merged into the color scheme's [WM] group by plasma-config.nix.
+    WM.activeFont = segoe 9;
+    Icons.Theme = "Windows 7 Aero";
+    Sounds.Theme = "Windows 7";
     "KFileDialog Settings" = {
       "Show hidden files" = true;
       "Sort directories first" = true;
       "View Style" = "DetailTree";
     };
   };
+  "Kvantum/kvantum.kvconfig".General.theme = "Windows7Aero";
+  # Skip ATP's first-run wizard: everything it applies is declared here.
+  aerothemeplasmarc.OOTB.wizardRun = true;
   kcminputrc = {
     Keyboard.RepeatDelay = 250;
     Mouse = {
-      cursorTheme = "Breeze_Light";
-      cursorSize = 24;
+      cursorTheme = "aero-drop";
+      cursorSize = 32;
     };
     "Libinput][1118][2479][Microsoft Surface 045E:09AF Touchpad" = {
       NaturalScroll = true;
@@ -111,35 +129,101 @@ in
       Number = 9;
       Rows = 3;
     };
+    # Equal outer and inner gaps for windows placed in KWin's custom tiles.
+    Tiling.padding = 8;
     "Effect-overview" = {
       BorderActivate = 9;
       GridBorderActivate = 7;
       GridTouchBorderActivate = 0;
     };
+    # AeroShell effects replace their stock KWin counterparts (as ATP's wizard does).
     Plugins = {
       diminactiveEnabled = true;
       touchpointsEnabled = true;
       wobblywindowsEnabled = true;
-    };
+    }
+    // effects true [
+      "aeroglassblur"
+      "aeroglide"
+      "aeroshell-thumbnails"
+      "dimscreenaero"
+      "fadingpopupsaero"
+      "launchfeedback"
+      "minimizeall"
+      "smodglow"
+      "smodpeekeffect"
+      "smodpeekscript"
+      "smodsnap"
+      "squashaero"
+    ]
+    // effects false [
+      "blur"
+      "contrast"
+      "dialogparent"
+      "fade"
+      "fadingpopups"
+      "login"
+      "logout"
+      "maximize"
+      "scale"
+      "slide"
+      "slidingnotifications"
+      "slidingpopups"
+      "squash"
+      "windowaperture"
+    ];
     TouchEdges.Bottom = "ApplicationLauncher";
     Wayland = {
       InputMethod = "${pkgs.maliit-keyboard}/share/applications/com.github.maliit.keyboard.desktop";
       VirtualKeyboardMode = 1; # Show for touch/pen input, not ordinary mouse clicks.
     };
     Xwayland.Scale = 1;
+    TabBox = {
+      ShowDesktopMode = 1;
+      LayoutName = "thumbnail_aero";
+    };
+    TabBoxAlternative = {
+      ShowDesktopMode = 1;
+      LayoutName = "flip3d";
+    };
     "org.kde.kdecoration2" = {
-      library = "org.kde.kwin.aurorae";
-      theme = "__aurorae__svg__Se7enAero";
+      library = "org.smod.smod";
+      theme = "SMOD";
+      ButtonsOnLeft = "M";
+      ButtonsOnRight = "H_IAX";
       NoPlugin = false;
     };
   };
-  kwinrulesrc.General.rules = "";
-  ksmserverrc.General.loginMode = "emptySession";
+  # ATP's default window rules (aeroshell.rules): keep the UAC prompt unminimizable.
+  kwinrulesrc = {
+    "1" = {
+      Description = "POLKIT_RULES";
+      clientmachine = "localhost";
+      minimizerule = 2;
+      wmclass = "(polkit-kde-authentication-agent-1)|(polkit-kde-manager)|(org.kde.polkit-kde-authentication-agent-1)";
+      wmclassmatch = 3;
+    };
+    "2" = {
+      Description = "LINVER_RULES";
+      clientmachine = "localhost";
+      minimizerule = 2;
+      wmclass = "linver";
+      wmclassmatch = 1;
+    };
+    General = {
+      count = 2;
+      rules = "1,2";
+    };
+  };
+  ksmserverrc.General = {
+    loginMode = "emptySession";
+    confirmLogout = false;
+  };
   "plasma-localerc".Formats.LANG = "en_US.UTF-8";
-  plasmarc.Theme.name = "Se7enAeroStyle";
+  plasmarc.Theme.name = "Seven-Black";
   ksplashrc.KSplash = {
     Engine = "KSplashQML";
-    Theme = "Se7enAero";
+    Theme = "authui7";
   };
   kactivitymanagerdrc = {
     activities.${activity} = "Default";
@@ -203,6 +287,8 @@ in
     };
   };
 
+  # Layout for the stock Plasma session only; AeroShell keeps its own
+  # plasma-io.gitgud.wackyideas.desktop-appletsrc, created from ATP's layout.
   "plasma-org.kde.plasma.desktop-appletsrc" = lib.foldl' lib.recursiveUpdate {
     "ActionPlugins][0" = {
       "MiddleButton;NoModifier" = "org.kde.paste";
@@ -210,16 +296,8 @@ in
     };
     "ActionPlugins][1"."RightButton;NoModifier" = "org.kde.contextmenu";
   } (map panelSettings panels);
-  plasmashellrc = lib.foldl' lib.recursiveUpdate { } (
-    map (panel: {
-      "PlasmaViews][Panel ${toString panel.id}" = {
-        floating = 1;
-        panelVisibility = 1;
-        shell = "org.kde.plasma.desktop";
-      };
-      "PlasmaViews][Panel ${toString panel.id}][Defaults".thickness = 48;
-    }) panels
-  );
+  # plasmashellrc is not managed: it is shared with AeroShell, which stores its
+  # taskbar geometry there, and rewriting it each login would reset that panel.
 
   dolphinrc = {
     "KFileDialog Settings" = {

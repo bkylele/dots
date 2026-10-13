@@ -5,7 +5,7 @@
     enableQt5Integration = false;
   };
   services.displayManager = {
-    defaultSession = "plasma";
+    defaultSession = lib.mkDefault "plasma";
     sddm = {
       enable = true;
       wayland.enable = true;
@@ -22,6 +22,29 @@
     pkgs.maliit-keyboard
     pkgs.hunspellDicts.en_US
   ];
+
+  # Maliit can retain the pre-suspend screen geometry after waking, which
+  # makes the keyboard extend beyond the display edges. Toggling KWin's
+  # virtual-keyboard property forces Maliit to measure the current screen
+  # again. This mirrors the manual disable/enable workaround.
+  powerManagement.resumeCommands = ''
+    user_uid="$(${pkgs.coreutils}/bin/id -u brian)"
+    runtime_dir="/run/user/$user_uid"
+    if [ -S "$runtime_dir/bus" ]; then
+      if ${pkgs.util-linux}/bin/runuser -u brian -- env \
+        XDG_RUNTIME_DIR="$runtime_dir" \
+        DBUS_SESSION_BUS_ADDRESS="unix:path=$runtime_dir/bus" \
+        ${pkgs.systemd}/bin/busctl --user set-property \
+        org.kde.KWin /VirtualKeyboard org.kde.kwin.VirtualKeyboard enabled b false; then
+        ${pkgs.coreutils}/bin/sleep 1
+        ${pkgs.util-linux}/bin/runuser -u brian -- env \
+          XDG_RUNTIME_DIR="$runtime_dir" \
+          DBUS_SESSION_BUS_ADDRESS="unix:path=$runtime_dir/bus" \
+          ${pkgs.systemd}/bin/busctl --user set-property \
+          org.kde.KWin /VirtualKeyboard org.kde.kwin.VirtualKeyboard enabled b true || true
+      fi
+    fi
+  '';
 
   # Maliit's upstream default is /usr/share/hunspell, which does not exist on NixOS.
   nixpkgs.overlays = [

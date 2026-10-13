@@ -8,6 +8,9 @@ vim.keymap.set('n', '<c-c>', '<esc>')
 vim.keymap.set('t', '<c-[>', '<c-\\><c-n>')
 vim.keymap.set('i', 'jk', '<esc>')
 
+vim.keymap.set('n', '<a-s-o>', '[<space>', { remap = true })
+vim.keymap.set('n', '<a-o>', ']<space>', { remap = true })
+
 -- emacs style movement in insert mode
 vim.keymap.set('i', '<c-n>', '<C-o>j')
 vim.keymap.set('i', '<c-p>', '<C-o>k')

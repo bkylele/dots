@@ -11,6 +11,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Nix packaging of AeroThemePlasma (Windows 7 look for Plasma), pinned in flake.lock.
+    aerothemeplasma-nix = {
+      url = "github:nyakase/aerothemeplasma-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     glide = {
       url = "github:glide-browser/glide.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -40,6 +46,7 @@
             ./hosts/buggy/configuration.nix
             nixos-hardware.nixosModules.microsoft-surface-pro-intel
             inputs.nix-index-database.nixosModules.default
+            inputs.aerothemeplasma-nix.nixosModules.aerothemeplasma-nix
           ];
         };
 
