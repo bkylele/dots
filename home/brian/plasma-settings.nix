@@ -150,6 +150,7 @@ in
       "fadingpopupsaero"
       "launchfeedback"
       "minimizeall"
+      "slide" # Virtual desktop switch animation.
       "smodglow"
       "smodpeekeffect"
       "smodpeekscript"
@@ -166,7 +167,6 @@ in
       "logout"
       "maximize"
       "scale"
-      "slide"
       "slidingnotifications"
       "slidingpopups"
       "squash"
@@ -239,22 +239,22 @@ in
     kaccess."Toggle Screen Reader On and Off" = "none,Meta+Alt+S,Toggle Screen Reader On and Off";
     ksmserver."Lock Session" = "none,Screensaver\\tMeta+L,Lock Session";
     kwin = {
-      "Activate Window Demanding Attention" = "none,Meta+Ctrl+A,Activate Window Demanding Attention";
-      "Cycle Overview Opposite" = "Meta+O,none,Cycle through Grid View and Overview";
-      "Edit Tiles" = "none,Meta+T,Toggle Tiles Editor";
-      "Kill Window" = "none,Meta+Ctrl+Esc,Kill Window";
-      "Switch One Desktop Down" = "Meta+J,Meta+Ctrl+Down,Switch One Desktop Down";
-      "Switch One Desktop Up" = "Meta+K,Meta+Ctrl+Up,Switch One Desktop Up";
-      "Switch One Desktop to the Left" = "Meta+H,Meta+Ctrl+Left,Switch One Desktop to the Left";
-      "Switch One Desktop to the Right" = "Meta+L,Meta+Ctrl+Right,Switch One Desktop to the Right";
-      "Window Close" = "Meta+Q,Alt+F4,Close Window";
-      "Window Maximize" = "Meta+F,Meta+PgUp,Maximize Window";
-      "Window Custom Quick Tile Bottom" = "Meta+Shift+J,none,Custom Quick Tile Window to the Bottom";
-      "Window Custom Quick Tile Left" = "Meta+Shift+H,none,Custom Quick Tile Window to the Left";
-      "Window Custom Quick Tile Right" = "Meta+Shift+L,none,Custom Quick Tile Window to the Right";
-      "Window Custom Quick Tile Top" = "Meta+Shift+K,none,Custom Quick Tile Window to the Top";
-      "Window One Screen to the Left" = "Meta+Alt+Shift+H,none,Move Window One Screen to the Left";
-      "Window One Screen to the Right" = "Meta+Alt+Shift+L,none,Move Window One Screen to the Right";
+        "Activate Window Demanding Attention" = "none,Meta+Ctrl+A,Activate Window Demanding Attention";
+        "Cycle Overview Opposite"             = "Meta+O,none,Cycle through Grid View and Overview";
+        "Edit Tiles"                          = "none,Meta+T,Toggle Tiles Editor";
+        "Kill Window"                         = "none,Meta+Ctrl+Esc,Kill Window";
+        "Window Close"                        = "Meta+Q,Alt+F4,Close Window";
+        "Window One Screen to the Left"       = "Meta+Alt+Shift+H,none,Move Window One Screen to the Left";
+        "Window One Screen to the Right"      = "Meta+Alt+Shift+L,none,Move Window One Screen to the Right";
+        "Switch One Desktop Down"             = "Meta+J,Meta+Ctrl+Down,Switch One Desktop Down";
+        "Switch One Desktop Up"               = "Meta+K,Meta+Ctrl+Up,Switch One Desktop Up";
+        "Switch One Desktop to the Left"      = "Meta+H,Meta+Ctrl+Left,Switch One Desktop to the Left";
+        "Switch One Desktop to the Right"     = "Meta+L,Meta+Ctrl+Right,Switch One Desktop to the Right";
+        "Window One Desktop Down"             = "Meta+Shift+J,Meta+Ctrl+Shift+Down,Window One Desktop Down";
+        "Window One Desktop Up"               = "Meta+Shift+K,Meta+Ctrl+Shift+Up,Window One Desktop Up";
+        "Window One Desktop to the Left"      = "Meta+Shift+H,Meta+Ctrl+Shift+Left,Window One Desktop to the Left";
+        "Window One Desktop to the Right"     = "Meta+Shift+L,Meta+Ctrl+Shift+Right,Window One Desktop to the Right";
+        "Window Maximize"                     = "Meta+F,Meta+PgUp,Maximize Window";
     };
     org_kde_powerdevil.powerProfile = "Battery,Battery\\tMeta+B,Switch Power Profile";
     plasmashell = {

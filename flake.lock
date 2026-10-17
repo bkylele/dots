@@ -170,7 +170,24 @@
         "glide": "glide",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_2",
+        "tailscale-widget": "tailscale-widget"
+      }
+    },
+    "tailscale-widget": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784191707,
+        "narHash": "sha256-qeP3hAnEkEKRnb7pNsoj8VkdclE81QiB6cp3rcHGjvg=",
+        "owner": "DeadIndian",
+        "repo": "tailscale-widget",
+        "rev": "8f161223b276edbf39e2e4e4b6e08b2ea38b9cbd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "DeadIndian",
+        "repo": "tailscale-widget",
+        "type": "github"
       }
     }
   },

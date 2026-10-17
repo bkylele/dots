@@ -17,6 +17,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Plasma 6 widget for controlling Tailscale; built in home/brian/tailscale-widget.nix.
+    tailscale-widget = {
+      url = "github:DeadIndian/tailscale-widget";
+      flake = false;
+    };
+
     glide = {
       url = "github:glide-browser/glide.nix";
       inputs.nixpkgs.follows = "nixpkgs";
