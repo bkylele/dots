@@ -23,6 +23,16 @@ let
       libplasma
     ];
 
+    # Upstream metadata lacks these keys, so the system tray never lists the
+    # widget. They make it selectable under the tray's Entries settings.
+    postPatch = ''
+      ${pkgs.lib.getExe pkgs.jq} '. + {
+        "X-Plasma-NotificationArea": "true",
+        "X-Plasma-NotificationAreaCategory": "SystemServices"
+      }' package/metadata.json > metadata.json.new
+      mv metadata.json.new package/metadata.json
+    '';
+
     dontWrapQtApps = true;
 
     meta = {
