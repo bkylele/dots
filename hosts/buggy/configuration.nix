@@ -1,11 +1,25 @@
 {
+  inputs,
   pkgs,
   ...
 }:
+let
+  # Keep the upstream bundle immutable and apply the NixOS integration tweak in
+  # the store.  The local `linux_maplestory/` directory is not an input.
+  maplestoryBundle = pkgs.runCommandLocal "linux-maplestory-nixos" { } ''
+    cp -a ${inputs.linux-maplestory}/. "$out"
+    substituteInPlace "$out/install.sh" \
+      --replace-fail \
+        '    --skip-runtime) APPLY_RUNTIME=0; shift ;;' \
+        '    --skip-fkeys) APPLY_FKEYS=0; PERSIST_FKEYS=0; shift ;;
+    --skip-runtime) APPLY_RUNTIME=0; shift ;;'
+  '';
+in
 {
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
+    ../../modules/nixos/surface-ov5693-front-camera.nix
     ../../home/brian
   ];
 
@@ -120,6 +134,22 @@
   programs.steam.enable = true;
   programs.gamescope.enable = true;
   programs.fuse.userAllowOther = true;
+
+  # MapleStory itself and its prefix are managed by Steam.  Keep the patch
+  # bundle as a pinned flake input rather than vendoring it in this repository.
+  boot.kernelModules = [ "hid-apple" ];
+  boot.extraModprobeConfig = "options hid_apple fnmode=2";
+  environment.systemPackages = [
+    pkgs.protonup-qt
+    pkgs.protontricks
+    (pkgs.writeShellApplication {
+      name = "maplestory-patch";
+      runtimeInputs = with pkgs; [ coreutils gnugrep procps python3 ];
+      text = ''
+        exec ${maplestoryBundle}/install.sh --skip-fkeys "$@"
+      '';
+    })
+  ];
   nixpkgs.config.allowUnfree = true;
   programs.kdeconnect.enable = true;
 
@@ -147,6 +177,7 @@
     extraGroups = [
       "wheel"
       "networkmanager"
+      "input" # MapleStory's Wine DirectInput reads /dev/input/event*.
     ];
   };
 

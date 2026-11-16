@@ -27,6 +27,12 @@
       url = "github:glide-browser/glide.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # MapleStory Proton patch bundle; kept outside this dotfiles repository.
+    linux-maplestory = {
+      url = "github:oldschoola/linux_maplestory";
+      flake = false;
+    };
   };
 
   outputs =
@@ -37,6 +43,29 @@
       ...
     }@inputs:
     {
+      packages.x86_64-linux.ov5693-surface =
+        self.nixosConfigurations.buggy.config.system.build.ov5693-surface;
+
+      checks.x86_64-linux =
+        let
+          host = self.nixosConfigurations.buggy;
+          camera = self.packages.x86_64-linux.ov5693-surface;
+        in
+        {
+          ov5693-surface = camera;
+          ov5693-surface-source = camera.patchedSource;
+          ov5693-surface-precedence =
+            host.pkgs.runCommand "ov5693-surface-precedence"
+              {
+                nativeBuildInputs = [ host.pkgs.kmod ];
+              }
+              ''
+                module=$(modinfo -b ${host.config.system.modulesTree} -k ${camera.modDirVersion} -F filename ov5693)
+                test "$(readlink -f "$module")" = '${camera}/lib/modules/${camera.modDirVersion}/updates/ov5693.ko'
+                touch "$out"
+              '';
+        };
+
       templates = {
         default = {
           path = ./templates/default;

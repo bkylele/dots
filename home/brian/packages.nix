@@ -8,6 +8,7 @@ let
   neovimPlugins = with pkgs.vimPlugins; [
     vim-fugitive
     vim-dispatch
+    fzf-vim
     undotree
     nvim-lspconfig
     nvim-surround
@@ -59,6 +60,7 @@ in
     zoom-us
     vial
     kakoune
+    android-tools
 
     # Neovim discovers this interpreter and its pynvim module from PATH.
     pythonWithPynvim

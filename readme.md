@@ -150,6 +150,9 @@ The existing GNOME Keyring stays for applications using Secret Service.
 
 ## Surface tablet support
 
+For the OV5693 front camera's external kernel module, pinned patches, build
+commands and hardware checks, see [Surface front camera](docs/surface-ov5693-front-camera.md).
+
 The Surface Pro 8 uses the existing linux-surface kernel, IPTSD touch/pen daemon,
 IIO sensor service and Plasma Wayland. Tablet mode switches automatically with
 the Type Cover; rotation support and Xournal++ for pen notes were already installed.

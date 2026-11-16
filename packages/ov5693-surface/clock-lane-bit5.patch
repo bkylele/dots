@@ -1,0 +1,19 @@
+--- a/drivers/media/i2c/ov5693.c
++++ b/drivers/media/i2c/ov5693.c
+@@ -621,6 +621,16 @@ static int ov5693_stream_configure(struct ov5693_device *ov5693, bool enable)
+ {
+ 	int ret = 0;
+ 
++	/*
++	 * Older kernels lack the IPU6 clock-noncontinuous property handling.
++	 * On this Surface, gate the clock lane at stream-on by changing only
++	 * BIT(5). Preserve the other MIPI_CTRL00 bits; do not write 0x2d.
++	 * Applied only when the configured driver has no upstream handling.
++	 */
++	if (enable)
++		cci_update_bits(ov5693->regmap, CCI_REG8(0x4800), BIT(5),
++				BIT(5), &ret);
++
+ 	cci_write(ov5693->regmap, OV5693_SW_STREAM_REG,
+ 		  enable ? OV5693_START_STREAMING : OV5693_STOP_STREAMING,
+ 		  &ret);

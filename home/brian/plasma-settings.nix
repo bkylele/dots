@@ -255,6 +255,7 @@ in
         "Window One Desktop to the Left"      = "Meta+Shift+H,Meta+Ctrl+Shift+Left,Window One Desktop to the Left";
         "Window One Desktop to the Right"     = "Meta+Shift+L,Meta+Ctrl+Shift+Right,Window One Desktop to the Right";
         "Window Maximize"                     = "Meta+F,Meta+PgUp,Maximize Window";
+        "Window On All Desktops"              = "Meta+Space,none,Keep Window on All Desktops";
     };
     org_kde_powerdevil.powerProfile = "Battery,Battery\\tMeta+B,Switch Power Profile";
     plasmashell = {
