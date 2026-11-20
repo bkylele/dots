@@ -55,11 +55,11 @@ in
     }
   ];
 
-  # systemd-sleep records the swapfile's device and offset in the
-  # HibernateLocation EFI variable, and the systemd initrd resumes from it.
-  # This avoids hardcoding resume_offset, which changes whenever the swapfile
-  # is recreated.
-  boot.initrd.systemd.enable = true;
+  # # systemd-sleep records the swapfile's device and offset in the
+  # # HibernateLocation EFI variable, and the systemd initrd resumes from it.
+  # # This avoids hardcoding resume_offset, which changes whenever the swapfile
+  # # is recreated.
+  # boot.initrd.systemd.enable = true;
 
   networking.hostName = "buggy";
 

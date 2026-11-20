@@ -81,7 +81,7 @@
     plasma-browser-integration
     plasma-workspace-wallpapers
     konsole
-    kwin-x11
+    # kwin-x11
     (lib.getBin qttools)
     ark
     elisa
