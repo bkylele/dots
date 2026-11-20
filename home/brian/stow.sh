@@ -2,7 +2,7 @@
 repository="$HOME/dots"
 stow_dir="$repository/stow"
 targets=(.bashrc .config/kitty/kitty.conf .config/user-dirs.dirs
-  .config/nvim/init.lua .config/nvim/lua .config/kak)
+  .config/nvim/init.lua .config/nvim/lua)
 
 if [[ ! -d "$stow_dir/apps" ]]; then
   echo "dots-stow: missing $stow_dir/apps; keep the checkout at ~/dots" >&2
@@ -69,7 +69,7 @@ if [[ -d "$HOME/$old_plugins/start" ]]; then
 fi
 
 mkdir -p "$HOME/.config/kitty" "$HOME/.config/nvim"
-# Fold kak/ and nvim/lua/ into directory links, keeping Kakoune's plugins writable
-# in the checkout and preserving the target list above across repeated runs.
+# Fold nvim/lua/ into a directory link, preserving the target list above across
+# repeated runs.
 stow --dir="$stow_dir" --target="$HOME" --simulate --restow apps
 stow --dir="$stow_dir" --target="$HOME" --restow apps

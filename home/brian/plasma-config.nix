@@ -50,6 +50,7 @@ let
     name = "dots-plasma-apply";
     runtimeInputs = [
       pkgs.coreutils
+      pkgs.diffutils
       pkgs.findutils
     ];
     text = ''

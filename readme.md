@@ -32,11 +32,9 @@ home directory directly to those files and directories:
 | `~/.config/kitty/kitty.conf` | `.config/kitty/kitty.conf` |
 | `~/.config/nvim/init.lua` | `.config/nvim/init.lua` |
 | `~/.config/nvim/lua` | `.config/nvim/lua` |
-| `~/.config/kak` | `.config/kak` (including locally managed plugins) |
 | `~/.config/user-dirs.dirs` | `.config/user-dirs.dirs` |
 
 The old `stuff/` directory has been removed. Edit files in `stow/apps/`.
-Kakoune's existing plugins were copied too, but remain Git-ignored local state.
 
 The activation helper `dots-stow` preserves conflicting files, directories,
 and old Home Manager links in `~/.local/state/dots-stow/backup.*` before linking.
